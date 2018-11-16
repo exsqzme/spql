@@ -1,0 +1,27 @@
+{
+  "name": "spql",
+  "version": "0.1.0",
+  "description": "Query SharePoint's Web Services",
+  "main": "lib/spql.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/michaelaldave/spql.git"
+  },
+  "keywords": [
+    "sharepoint",
+    "soap",
+    "query"
+  ],
+  "author": "Michael Aldave <michael.aldave@outlook.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/michaelaldave/spql/issues"
+  },
+  "homepage": "https://github.com/michaelaldave/spql#readme",
+  "devDependencies": {
+    "axios": "0.18.0"
+  }
+}
