@@ -6,6 +6,7 @@
                 "targets": {
                     "browsers": ["last 2 versions", "ie 11", "not ie 10"]
                 },
+                "exclude": ["transform-async-to-generator", "transform-regenerator"],
                 "modules": false,
                 "loose": true
             }

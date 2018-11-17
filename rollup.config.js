@@ -26,7 +26,7 @@ export default [
             globals: {
                 axios: 'axios'
             }
-        },     
+        },
         external: [
             ...Object.keys(pkg.dependencies || {}),
             ...Object.keys(pkg.peerDependencies || {})
