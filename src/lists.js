@@ -3,9 +3,9 @@ import { updateListItems, getListItems, getList } from './operations/lists'
 import { encodeXml, listInfoXmlToJson, updateListItemsXmlToJson, getListItemsXmlToJson } from './xml/helpers'
 
 const DEFAULT_QUERY_OPTIONS = `<QueryOptions>
-    <ViewAttributes Scope='RecursiveAll' />
+    <ViewAttributes Scope="RecursiveAll" />
     <IncludeMandatoryColumns>FALSE</IncludeMandatoryColumns>
-    <ViewFieldsOnly>TRUE</ViewFieldsOnly>        
+    <ViewFieldsOnly>TRUE</ViewFieldsOnly>
 </QueryOptions>`
 
 export const connectToList = siteUrl => listName => {

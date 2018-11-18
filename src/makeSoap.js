@@ -3,15 +3,15 @@ import {escapeColumnValue} from './xml/helpers'
 
 const SCHEMA = 'http://schemas.microsoft.com/sharepoint'
 
-export const makeSoap = async (siteUrl, operation, options) => {
+export const makeSoap = (siteUrl, operation, options) => {
 
     const {name, action, service, additionalHeader} = operation
     const soapUrl = processSiteUrl(siteUrl, service)
 
     let ajaxOptions = {
 		url: soapUrl,
-		method: "post",
-		responseType: "document",
+		method: 'post',
+		responseType: 'text',
 		data: `<soap:Envelope
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
@@ -31,8 +31,20 @@ export const makeSoap = async (siteUrl, operation, options) => {
 		ajaxOptions.headers.SOAPAction = `${SCHEMA}/soap/${name}`
 	}
 
-	const {data} = await axios(ajaxOptions)    
-    return data
+	return axios(ajaxOptions).then(({status, statusText, data}) => {
+        let xmlData
+        
+        if (status !== 200) throw new Error(`${status}: ${statusText}`)   
+        
+        try {
+            let oParser = new DOMParser()
+            xmlData = oParser.parseFromString(data, "application/xml")            
+        } catch (err) {
+            throw new Error('Unable to parse xml')
+        }        
+        
+        return xmlData
+    })
 }
     
 const processSiteUrl = (siteUrl, service) => `${siteUrl.replace(/\/$/, "")}/_vti_bin/${service}.asmx`
