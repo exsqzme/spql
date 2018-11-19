@@ -98,3 +98,17 @@ const choicesXmlToJson = xml => {
 
 	return processXml(mapFn, selector)(xml)
 }
+
+export const listCollectionToJson = processXml(
+	node => ({
+		id: node.getAttribute('ID'),
+		name: node.getAttribute('Title'),		
+		siteUrl: node.getAttribute('WebFullUrl'),
+		description: node.getAttribute('Description'),
+		itemCount: node.getAttribute('ItemCount'),
+		defaultViewUrl: node.getAttribute('DefaultViewUrl'),
+		isDocumentList: node.getAttribute('BaseType') === '1',
+		isHidden: node.getAttribute('Hidden') === 'True'
+	}),
+	'List'
+)
