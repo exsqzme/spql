@@ -1,0 +1,5 @@
+export const TEXT = 'Text'
+export const INTEGER = 'Integer'
+export const DATETIME = 'DateTime'
+export const BOOLEAN = 'Boolean'
+export const COUNTER = 'Counter'
