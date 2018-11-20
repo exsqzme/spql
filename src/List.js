@@ -3,7 +3,7 @@ import { updateListItems, getListItems, getList, getListCollection } from './ope
 import { encodeXml, listInfoXmlToJson, updateListItemsXmlToJson, getListItemsXmlToJson, listCollectionToJson } from './helpers/xml'
 import CamlBuilder from './camlBuilder/caml'
 
-const {toQuery, Tags, tagBuilder, Types} = CamlBuilder
+const {Query, EQ,  IS_NOT_NULL, Types} = CamlBuilder
 
 const DEFAULT_QUERY_OPTIONS = `<QueryOptions>
     <ViewAttributes Scope="RecursiveAll" />
@@ -50,12 +50,12 @@ export const connectToList = siteUrl => listName => {
             )
     }
 
-    const all = fields => soapGet(fields, toQuery(tagBuilder(Tags.IS_NOT_NULL)('ID')))
+    const all = fields => soapGet(fields, Query(IS_NOT_NULL('ID')))
 
     const find = (query, fields) => soapGet(fields, query)
 
     const findById = (id, fields) =>
-        soapGet(fields, toQuery(tagBuilder(Tags.EQ)('ID', id, Types.COUNTER)))
+        soapGet(fields, Query(EQ('ID', id, Types.COUNTER)))
             .then(([result]) => result)
 
     const findOne = (query, fields) =>

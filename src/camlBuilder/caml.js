@@ -4,14 +4,13 @@ import * as Values from './values'
 
 const toFieldRef = name =>
     `<FieldRef Name="${name}" />`
+
 const toValue = (type = Types.TEXT) =>
     value =>
         `<Value Type="${type}">${value}</Value>`
 
-const toQuery = query =>
-    `<Query><Where>${query}</Where></Query>`
 
-const tagBuilder = tag => { 
+const TagBuilder = tag => { 
     switch (tag) {
         case Tags.IS_NULL:
         case Tags.IS_NOT_NULL:
@@ -31,20 +30,34 @@ const tagBuilder = tag => {
     throw new Error(`Invalid Tag Provided: ${tag}`)
 }
 
+const Query = query =>
+    `<Query><Where>${query}</Where></Query>`
+
+const mapObj = (fn, obj) => {
+    let newObj = {}
+
+    for (const [key, value] of Object.entries(obj)) {
+        newObj[key] = fn(value)
+    }
+
+    return newObj
+}
+
+const TagFns = mapObj(TagBuilder, Tags)
+
 const eqUser = userId =>
     fieldRef =>
-        tagBuilder(Tags.EQ)(fieldRef, userId, Types.INTEGER)
+        TagFns.EQ(fieldRef, userId, Types.INTEGER)
 
 const eqCurrentUser = eqUser(Values.CURRENT_USER)
 
 const CamlBuilder = {
     Types,
     Values,
-    Tags,
-    tagBuilder,
-    toQuery,
-    findItemsFromUser: (id, fieldName) => toQuery(eqUser(id)(fieldName)),
-    findItemsFromCurrentUser: fieldName => toQuery(eqCurrentUser()(fieldName))
+    ...TagFns,
+    Query,
+    findItemsFromUser: (id, fieldName) => Query(eqUser(id)(fieldName)),
+    findItemsFromCurrentUser: fieldName => Query(eqCurrentUser()(fieldName))
 }
 
 export default CamlBuilder
