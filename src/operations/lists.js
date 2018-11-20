@@ -1,6 +1,6 @@
-import {LISTS} from './webServices'
 import {makeOperation, makeOperationWithAction} from './helpers'
 
+const LISTS = 'lists'
 const makeListOperation = makeOperation(LISTS)
 const makeListOperationWithAction = makeOperationWithAction(LISTS)
 

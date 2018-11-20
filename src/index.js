@@ -1,9 +1,15 @@
-import {connectToList} from './list'
-import {listCollection} from './site'
+import {connectToList} from './List'
+import Site from './Site'
+import User from './User'
+import CamlBuilder from './camlBuilder/caml'
 
-export default {
+const spql = {
     connect: siteUrl => ({
         list: connectToList(siteUrl),
-        listCollection
-    })
+        ...Site(siteUrl),
+        ...User(siteUrl)
+    }),
+    CamlBuilder
 }
+
+export default spql

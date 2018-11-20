@@ -1,6 +1,9 @@
 import {makeSoap} from './makeSoap'
-import { updateListItems, getListItems, getList } from './operations/lists'
-import { encodeXml, listInfoXmlToJson, updateListItemsXmlToJson, getListItemsXmlToJson } from './xml/helpers'
+import { updateListItems, getListItems, getList, getListCollection } from './operations/lists'
+import { encodeXml, listInfoXmlToJson, updateListItemsXmlToJson, getListItemsXmlToJson, listCollectionToJson } from './helpers/xml'
+import CamlBuilder from './camlBuilder/caml'
+
+const {toQuery, Tags, tagBuilder, Types} = CamlBuilder
 
 const DEFAULT_QUERY_OPTIONS = `<QueryOptions>
     <ViewAttributes Scope="RecursiveAll" />
@@ -47,32 +50,17 @@ export const connectToList = siteUrl => listName => {
             )
     }
 
-    const all = fields => soapGet(fields,
-        `<Query>
-            <Where>
-                <IsNotNull>
-                    <FieldRef Name="ID" />
-                </IsNotNull>
-            </Where>
-        </Query>`
-    )    
+    const all = fields => soapGet(fields, toQuery(tagBuilder(Tags.IS_NOT_NULL)('ID')))
 
     const find = (query, fields) => soapGet(fields, query)
 
-    const findById = (id, fields) => soapGet(fields,
-        `<Query>
-                <Where>
-                    <Eq>
-                        <FieldRef Name="ID" />
-                        <Value Type="Text">${id}</Value>
-                    </Eq>
-                </Where>
-            </Query>`
-    )
-        .then(([result]) => result)
+    const findById = (id, fields) =>
+        soapGet(fields, toQuery(tagBuilder(Tags.EQ)('ID', id, Types.COUNTER)))
+            .then(([result]) => result)
 
-    const findOne = (query, fields) => soapGet(fields, query, { rowLimit: 1 })
-        .then(([result]) => result)
+    const findOne = (query, fields) =>
+        soapGet(fields, query, { rowLimit: 1 })
+            .then(([result]) => result)
 
     const create = soapUpdate('New')
 

@@ -1,9 +1,9 @@
 import axios from 'axios';
-import {escapeColumnValue} from './xml/helpers'
+import {escapeColumnValue} from './helpers/xml'
 
 const SCHEMA = 'http://schemas.microsoft.com/sharepoint'
 
-export const makeSoap = (siteUrl, operation, options) => {
+export const makeSoap = (siteUrl, operation, options = {}) => {
 
     const {name, action, service, additionalHeader} = operation
     const soapUrl = processSiteUrl(siteUrl, service)
@@ -70,6 +70,6 @@ const processUpdates = (batchCmd, items) => {
             </Batch>
         </updates>`
     } else {
-        return ""
+        return ''
     }
 }
