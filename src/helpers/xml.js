@@ -99,7 +99,7 @@ const choicesXmlToJson = xml => {
 	return processXml(mapFn, selector)(xml)
 }
 
-export const listCollectionToJson = processXml(
+export const listCollectionXmlToJson = processXml(
 	node => ({
 		id: node.getAttribute('ID'),
 		name: node.getAttribute('Title'),		
@@ -111,4 +111,13 @@ export const listCollectionToJson = processXml(
 		isHidden: node.getAttribute('Hidden') === 'True'
 	}),
 	'List'
+)
+
+export const userGroupsXmlToJson = processXml(
+	node => ({
+		id: node.getAttribute('ID'),
+		name: node.getAttribute('Name'),
+		description: node.getAttribute('Description')
+	}),
+	'Group'
 )

@@ -1,6 +1,6 @@
 import {makeSoap} from './makeSoap'
-import { updateListItems, getListItems, getList, getListCollection } from './operations/lists'
-import { encodeXml, listInfoXmlToJson, updateListItemsXmlToJson, getListItemsXmlToJson, listCollectionToJson } from './helpers/xml'
+import { updateListItems, getListItems, getList } from './operations/lists'
+import { encodeXml, listInfoXmlToJson, updateListItemsXmlToJson, getListItemsXmlToJson } from './helpers/xml'
 import CamlBuilder from './camlBuilder/caml'
 
 const {Query, EQ,  IS_NOT_NULL, Types} = CamlBuilder

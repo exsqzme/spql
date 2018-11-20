@@ -1,14 +1,23 @@
-import {connectToList} from './List'
-import Site from './Site'
-import User from './User'
+import {connectToList} from './ListServices'
+import SiteServices from './SiteServices'
+import UserServices from './UserServices'
+import AuthServices from './AuthServices'
 import CamlBuilder from './camlBuilder/caml'
 
 const spql = {
-    connect: siteUrl => ({
-        list: connectToList(siteUrl),
-        ...Site(siteUrl),
-        ...User(siteUrl)
-    }),
+    connect: siteUrl => {
+        const User = UserServices(siteUrl)
+        const List = connectToList(siteUrl)
+        const Auth = AuthServices(User)
+        const Site = SiteServices(siteUrl)
+
+        return {
+            List,            
+            Auth,
+            ...Site,
+            ...User
+        }
+    },
     CamlBuilder
 }
 

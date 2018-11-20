@@ -1,15 +1,15 @@
 import {makeSoap} from './makeSoap'
 import { getListCollection } from './operations/lists'
-import { listCollectionToJson } from './helpers/xml'
+import { listCollectionXmlToJson } from './helpers/xml'
 
-const Site = siteUrl => {
+const SiteServices = siteUrl => {
 
     const listsFromSite = () => makeSoap(siteUrl, getListCollection)
-        .then(listCollectionToJson)
+        .then(listCollectionXmlToJson)
 
     return {
         listsFromSite
     }
 }
 
-export default Site
+export default SiteServices
