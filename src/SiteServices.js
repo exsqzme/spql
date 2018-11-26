@@ -4,11 +4,11 @@ import { listCollectionXmlToJson } from './helpers/xml'
 
 const SiteServices = siteUrl => {
 
-    const listsFromSite = () => makeSoap(siteUrl, getListCollection)
+    const getListCollectionInfo = () => makeSoap(siteUrl, getListCollection)
         .then(listCollectionXmlToJson)
 
     return {
-        listsFromSite
+        getListCollectionInfo
     }
 }
 

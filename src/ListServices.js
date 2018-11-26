@@ -93,10 +93,10 @@ export const connectToList = siteUrl => listName => {
                 return itemCount ? parseInt(itemCount) : 0
             })
 
-    const schema = () => soapInfo()
+    const getSchema = () => soapInfo()
 
     return {
-        schema,
+        getSchema,
         count,
         all,
         find,
