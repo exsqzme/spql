@@ -28,6 +28,7 @@ export const connectToList = siteUrl => listName => {
     }
 
     const soapGet = (select, query, options = {}) => {
+        if (typeof select === 'string') select = [select]
         const staticNameToVariable = select.reduce((mapper, field) => {
             const [staticName, variable] = field.split(" AS ")
             mapper[staticName] = variable || staticName
