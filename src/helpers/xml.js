@@ -63,13 +63,14 @@ export const getListItemsXmlToJson = fieldMap => {
 
 export const listInfoXmlToJson = xml => {
 
-	const selector = 'Fields > Field:not([Hidden])'
+	const selector = 'Fields > Field'
 	const mapFn = node => {
 		let field = {
 			displayName: node.getAttribute('DisplayName'),
 			staticName: node.getAttribute('StaticName'),
 			description: node.getAttribute('Description'),
 			type: node.getAttribute('Type'),
+			isHidden: node.getAttribute('Hidden') === 'TRUE',
 			isReadOnly: node.getAttribute('ReadOnly') === 'TRUE',
 			isFormBaseType: node.getAttribute('FromBaseType') === 'TRUE'
 		}
@@ -87,8 +88,10 @@ export const listInfoXmlToJson = xml => {
 		return field
 
 	}
-	return processXml(mapFn, selector)(xml)
-
+	return {
+		...listCollectionXmlToJson(xml)[0],
+		fields: processXml(mapFn, selector)(xml)
+	}
 }
 
 const choicesXmlToJson = xml => {
@@ -105,6 +108,8 @@ export const listCollectionXmlToJson = processXml(
 		name: node.getAttribute('Title'),		
 		siteUrl: node.getAttribute('WebFullUrl'),
 		description: node.getAttribute('Description'),
+		created: node.getAttribute('Created'),
+		modified: node.getAttribute('Modified'),
 		itemCount: node.getAttribute('ItemCount'),
 		defaultViewUrl: node.getAttribute('DefaultViewUrl'),
 		isDocumentList: node.getAttribute('BaseType') === '1',
