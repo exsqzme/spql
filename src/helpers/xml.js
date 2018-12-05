@@ -108,6 +108,7 @@ export const listCollectionXmlToJson = processXml(
 		name: node.getAttribute('Title'),		
 		siteUrl: node.getAttribute('WebFullUrl'),
 		description: node.getAttribute('Description'),
+		createdBy: node.getAttribute('Author'),
 		created: node.getAttribute('Created'),
 		modified: node.getAttribute('Modified'),
 		itemCount: node.getAttribute('ItemCount'),
