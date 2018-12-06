@@ -1,6 +1,6 @@
 {
   "name": "spql",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Query SharePoint's Web Services",
   "main": "lib/spql.js",
   "unpkg": "dist/spql.min.js",
@@ -27,13 +27,9 @@
     "url": "https://github.com/michaelaldave/spql/issues"
   },
   "homepage": "https://github.com/michaelaldave/spql#readme",
-  "peerDependencies": {
-    "axios": ">=0.18.0"
-  },
   "devDependencies": {
     "@babel/core": "7.1.6",
     "@babel/preset-env": "7.1.6",
-    "axios": "^0.18.0",
     "rimraf": "2.6.2",
     "rollup": "0.67.1",
     "rollup-plugin-babel": "4.0.3",

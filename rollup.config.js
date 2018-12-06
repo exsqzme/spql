@@ -22,10 +22,7 @@ export default [
             file: 'dist/spql.min.js',
             format: 'umd',
             name: 'spql',
-            indent: false,
-            globals: {
-                axios: 'axios'
-            }
+            indent: false
         },
         external: [
             ...Object.keys(pkg.dependencies || {}),

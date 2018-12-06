@@ -4,8 +4,6 @@ SpQL is an easier way of querying SharePoint's web servies. It abstracts away a 
 
 ## Installation
 
-SpQL requires [axios](https://github.com/axios/axios/) to run.
-
 Using [npm](https://www.npmjs.com/):
 
     $ npm install --save spql

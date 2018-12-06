@@ -1,4 +1,3 @@
-import axios from 'axios';
 import {escapeColumnValue} from './helpers/xml'
 
 const SCHEMA = 'http://schemas.microsoft.com/sharepoint'
@@ -8,11 +7,9 @@ export const makeSoap = (siteUrl, operation, options = {}) => {
     const {name, action, service, additionalHeader} = operation
     const soapUrl = processSiteUrl(siteUrl, service)
 
-    let ajaxOptions = {
-		url: soapUrl,
-		method: 'post',
-		responseType: 'text',
-		data: `<soap:Envelope
+    let fetchOptions = {
+		method: 'POST',
+		body: `<soap:Envelope
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
             xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
@@ -22,29 +19,35 @@ export const makeSoap = (siteUrl, operation, options = {}) => {
                 </${name}>
             </soap:Body>
         </soap:Envelope>`,
+        credentials: 'same-origin',
 		headers: {
-			'content-type': 'text/xml;charset="utf-8"'
+            'Accept': 'text/plain',
+			'Content-Type': 'text/xml;charset="utf-8"'
 		}
 	}
 	
 	if (action) {
-		ajaxOptions.headers.SOAPAction = `${SCHEMA}/soap/${name}`
+		fetchOptions.headers.SOAPAction = `${SCHEMA}/soap/${name}`
 	}
 
-	return axios(ajaxOptions).then(({status, statusText, data}) => {
-        let xmlData
-        
-        if (status !== 200) throw new Error(`${status}: ${statusText}`)   
-        
-        try {
-            let oParser = new DOMParser()
-            xmlData = oParser.parseFromString(data, "application/xml")            
-        } catch (err) {
-            throw new Error('Unable to parse xml')
-        }        
-        
-        return xmlData
-    })
+    return fetch(soapUrl, fetchOptions)
+        .then(response => {
+            if (response.status !== 200) throw new Error(`${response.status}: ${response.statusText}`)
+
+            return response.text()
+        })
+        .then(data => {
+            let xmlData
+            
+            try {
+                let oParser = new DOMParser()
+                xmlData = oParser.parseFromString(data, "application/xml")            
+            } catch (err) {
+                throw new Error('Unable to parse xml')
+            }        
+            
+            return xmlData
+        })
 }
     
 const processSiteUrl = (siteUrl, service) => `${siteUrl.replace(/\/$/, "")}/_vti_bin/${service}.asmx`
