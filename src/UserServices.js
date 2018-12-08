@@ -1,11 +1,16 @@
-import {connectToList} from './ListServices'
-import {getGroupCollectionFromUser} from './operations/usergroup'
+import { connectToList } from './ListServices'
+import { getGroupCollectionFromUser, getUserCollectionFromGroup, addGroup, removeGroup, addUserCollectionToGroup, removeUserCollectionFromGroup } from './operations/usergroup'
 import CamlBuilder from './camlBuilder/caml'
 import { makeSoap } from './makeSoap';
-import {userGroupsXmlToJson} from './helpers/xml'
+import { encodeXml, usersXmlToJson, groupsXmlToJson } from './helpers/xml'
+
+const buildUserXml = users => {
+    const mapUsersToXml = userLogin => `<User LoginName="${userLogin}" />`
+    return `<Users>${users.map(mapUsersToXml)}</Users>`
+}
 
 const UserServices = siteUrl => {
-    
+
     const getUserById = id =>
         connectToList(siteUrl)('UserInfo')
             .findById(
@@ -15,16 +20,49 @@ const UserServices = siteUrl => {
 
     const getCurrentUser = () => getUserById(CamlBuilder.Values.CURRENT_USER)
 
-    const getUserGroups = userLoginName =>
-                makeSoap(siteUrl, getGroupCollectionFromUser, {userLoginName})
-                    .then(userGroupsXmlToJson)
+    const getGroupsFromUser = userLoginName =>
+        makeSoap(siteUrl, getGroupCollectionFromUser, { userLoginName })
+            .then(groupsXmlToJson)
 
-    return {
-        getUserById,
-        getCurrentUser,
-        getUserGroups
+    const getUsersInGroup = groupName =>
+        makeSoap(siteUrl, getUserCollectionFromGroup, { groupName: encodeXml(groupName) })
+            .then(usersXmlToJson)
+
+    const createGroup = ({name, description = '', owner, ownerIsGroup = false, defaultUser}) => {
+        let groupInfo = {
+            groupName: encodeXml(name),
+            description: encodeXml(description),
+            ownerIdentifier: owner,
+            ownerType: ownerIsGroup ? 'group' : 'user'
+        }
+        if (defaultUser) groupInfo.defaultUserLoginName = defaultUser
+
+        return makeSoap(siteUrl, addGroup, groupInfo)
     }
 
-}
+    const deleteGroup = groupName => makeSoap(siteUrl, removeGroup, {groupName})
 
-export default UserServices
+    const addUserToGroup = (groupName, userLogin) => {
+        if (typeof userLogin === 'string') userLogin = [userLogin]
+        return makeSoap(siteUrl, addUserCollectionToGroup, {groupName, usersInfoXml: buildUserXml(userLogin)})
+    }
+
+    const deleteUserFromGroup = (groupName, userLogin) => {
+        if (typeof userLogin === 'string') userLogin = [userLogin]
+        return makeSoap(siteUrl, removeUserCollectionFromGroup, {groupName, userLoginNamesXml: buildUserXml(userLogin)})
+    }
+
+    return {
+            getUserById,
+            getCurrentUser,
+            getGroupsFromUser,
+            getUsersInGroup,
+            createGroup,
+            deleteGroup,
+            addUserToGroup,
+            deleteUserFromGroup
+        }
+
+    }
+
+    export default UserServices

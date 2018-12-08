@@ -119,11 +119,21 @@ export const listCollectionXmlToJson = processXml(
 	'List'
 )
 
-export const userGroupsXmlToJson = processXml(
+export const groupsXmlToJson = processXml(
 	node => ({
 		id: node.getAttribute('ID'),
 		name: node.getAttribute('Name'),
 		description: node.getAttribute('Description')
 	}),
 	'Group'
+)
+
+export const usersXmlToJson = processXml(
+	node => ({
+		id: node.getAttribute('ID'),
+		name: node.getAttribute('Name'),
+		account: node.getAttribute('LoginName'),
+		email: node.getAttribute('Email')
+	}),
+	'User'
 )

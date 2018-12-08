@@ -30,6 +30,7 @@
   "devDependencies": {
     "@babel/core": "7.1.6",
     "@babel/preset-env": "7.1.6",
+    "jest": "23.6.0",
     "rimraf": "2.6.2",
     "rollup": "0.67.1",
     "rollup-plugin-babel": "4.0.3",

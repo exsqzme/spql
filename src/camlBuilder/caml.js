@@ -9,7 +9,6 @@ const toValue = (type = Types.TEXT) =>
     value =>
         `<Value Type="${type}">${value}</Value>`
 
-
 const TagBuilder = tag => { 
     switch (tag) {
         case Tags.IS_NULL:

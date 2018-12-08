@@ -27,7 +27,7 @@ export const makeSoap = (siteUrl, operation, options = {}) => {
 	}
 	
 	if (action) {
-		fetchOptions.headers.SOAPAction = `${SCHEMA}/soap/${name}`
+		fetchOptions.headers.SOAPAction = `${SCHEMA}/soap/${additionalHeader}${name}`
 	}
 
     return fetch(soapUrl, fetchOptions)
