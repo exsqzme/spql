@@ -28,14 +28,14 @@ const UserServices = siteUrl => {
         makeSoap(siteUrl, getUserCollectionFromGroup, { groupName: encodeXml(groupName) })
             .then(usersXmlToJson)
 
-    const createGroup = ({name, description = '', owner, ownerIsGroup = false, defaultUser}) => {
-        let groupInfo = {
+    const createGroup = ({name, description = '', owner, ownerIsGroup = false, defaultUserLoginName}) => {
+        const groupInfo = {
             groupName: encodeXml(name),
             description: encodeXml(description),
             ownerIdentifier: owner,
-            ownerType: ownerIsGroup ? 'group' : 'user'
+            ownerType: ownerIsGroup ? 'group' : 'user',
+            defaultUserLoginName
         }
-        if (defaultUser) groupInfo.defaultUserLoginName = defaultUser
 
         return makeSoap(siteUrl, addGroup, groupInfo)
     }
@@ -45,6 +45,8 @@ const UserServices = siteUrl => {
     const addUserToGroup = (groupName, userLogin) => {
         if (typeof userLogin === 'string') userLogin = [userLogin]
         return makeSoap(siteUrl, addUserCollectionToGroup, {groupName, usersInfoXml: buildUserXml(userLogin)})
+            .then(() => true)
+            .catch(console.log)
     }
 
     const deleteUserFromGroup = (groupName, userLogin) => {

@@ -30,24 +30,36 @@ export const makeSoap = (siteUrl, operation, options = {}) => {
 		fetchOptions.headers.SOAPAction = `${SCHEMA}/soap/${additionalHeader}${name}`
 	}
 
-    return fetch(soapUrl, fetchOptions)
-        .then(response => {
-            if (response.status !== 200) throw new Error(`${response.status}: ${response.statusText}`)
+    return fetchSoap(soapUrl, fetchOptions)        
+}
 
-            return response.text()
-        })
-        .then(data => {
-            let xmlData
-            
-            try {
-                let oParser = new DOMParser()
-                xmlData = oParser.parseFromString(data, "application/xml")            
-            } catch (err) {
-                throw new Error('Unable to parse xml')
-            }        
-            
-            return xmlData
-        })
+const fetchSoap = async (url, options) => {
+    const response = await fetch(url, options)
+    const {status} = response
+    const xml = await parseXmlFromResponse(response)
+
+    if (status !== 200) {
+        const errorDetails = xml.querySelector('errorstring').textContent.replace(/[\n\r]+|[\s]{2,}/g, ' ').trim()
+        // Throw FETCH Type Error
+        throw new Error(`${errorDetails || 'Error making SOAP Request'} (${status})`)
+    }
+
+    return xml
+}
+
+const parseXmlFromResponse = async response => {
+    const text = await response.text()
+
+    try {
+        const oParser = new DOMParser()
+        const xmlData = oParser.parseFromString(text, "application/xml")
+        
+        return xmlData
+    } catch (err) {
+        // Throw XML Type Error
+        throw new Error('Unable to parse xml')
+    }
+    
 }
     
 const processSiteUrl = (siteUrl, service) => `${siteUrl.replace(/\/$/, "")}/_vti_bin/${service}.asmx`
