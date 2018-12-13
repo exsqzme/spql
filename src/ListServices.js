@@ -11,10 +11,10 @@ const DEFAULT_QUERY_OPTIONS = `<QueryOptions>
     <ViewFieldsOnly>TRUE</ViewFieldsOnly>
 </QueryOptions>`
 
-export const connectToList = siteUrl => listName => {
+export const connectToList = siteUrl => (listName, options = {schema: false, token: false}) => {
 
     listName = encodeXml(listName)
-
+    
     const soapUpdate = batchCmd => items => {
         const requestOptions = {
             listName,
