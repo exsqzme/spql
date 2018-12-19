@@ -11,7 +11,7 @@ const DEFAULT_QUERY_OPTIONS = `<QueryOptions>
     <ViewFieldsOnly>TRUE</ViewFieldsOnly>
 </QueryOptions>`
 
-export const connectToList = siteUrl => (listName, options = {schema: false, token: false}) => {
+export const connectToList = siteUrl => listName => {
 
     listName = encodeXml(listName)
     
@@ -27,7 +27,7 @@ export const connectToList = siteUrl => (listName, options = {schema: false, tok
             .then(result => Array.isArray(items) ? result : result[0])
     }
 
-    const soapGet = (select, query, options = {}) => {
+    const soapGet = (select, where, options = {}) => {
         if (typeof select === 'string') select = [select]
         const staticNameToVariable = select.reduce((mapper, field) => {
             const [staticName, variable] = field.split(" AS ")
@@ -39,7 +39,7 @@ export const connectToList = siteUrl => (listName, options = {schema: false, tok
         const requestOptions = {
             listName,
             viewFields: transformSelectedFieldsToViewFields(Object.keys(staticNameToVariable)),
-            query: query,
+            query: where,
             queryOptions: options.queryOptions || DEFAULT_QUERY_OPTIONS,
             rowLimit: options.rowLimit || 0,
         }
@@ -51,22 +51,22 @@ export const connectToList = siteUrl => (listName, options = {schema: false, tok
             )
     }
 
-    const all = fields => soapGet(fields, Query(IS_NOT_NULL('ID')))
+    const all = select => soapGet(select, Query(IS_NOT_NULL('ID')))
 
-    const find = (query, fields) => soapGet(fields, query)
+    const find = (select, where) => soapGet(select, where)
 
-    const findById = (id, fields) =>
-        soapGet(fields, Query(EQ('ID', id, Types.COUNTER)))
+    const findById = (select, id) =>
+        soapGet(select, Query(EQ('ID', id, Types.COUNTER)))
             .then(([result]) => result)
 
-    const findOne = (query, fields) =>
-        soapGet(fields, query, { rowLimit: 1 })
+    const findOne = (select, where) =>
+        soapGet(select, where, { rowLimit: 1 })
             .then(([result]) => result)
 
     const create = soapUpdate('New')
 
-    const updateById = (id, fields) => {
-        const items = { ID: id, ...fields }
+    const updateById = (id, updates) => {
+        const items = { ID: id, ...updates }
         soapUpdate("Update")(items)
     }
 
