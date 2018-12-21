@@ -28,7 +28,7 @@ export const escapeColumnValue = s => typeof s === 'string' ?
 	s.replace(/&(?![a-zA-Z]{1,8};)/g, '&amp;') :
 	s
 
-const processXml = (mapFn, selector) => xml => Array.from(xml.querySelectorAll(selector)).map(mapFn)
+const processXml = (mapFn, selector) => xml => Array.prototype.slice.call(xml.querySelectorAll(selector)).map(mapFn)
 
 export const updateListItemsXmlToJson = xml => {
 
@@ -51,7 +51,8 @@ export const getListItemsXmlToJson = fieldMap => {
 	const selector = 'row'
 	const mapFn = node => {
 		let properties = {}
-		for (const [staticName, variable] of Object.entries(fieldMap)) {
+		for (const staticName in fieldMap) {
+			const variable = fieldMap[staticName]
 			properties[variable] = node.getAttribute(`ows_${staticName}`)
 		}
 

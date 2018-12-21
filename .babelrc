@@ -11,5 +11,14 @@
                 "loose": true
             }
         ]
+    ],
+    "plugins": [
+        [
+            "module:fast-async",
+            {
+                "spec": true,
+                "compiler": { "promises": true, "generators": false }
+            }
+        ]
     ]
 }

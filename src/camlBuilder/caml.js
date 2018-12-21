@@ -35,8 +35,8 @@ const Query = query =>
 const mapObj = (fn, obj) => {
     let newObj = {}
 
-    for (const [key, value] of Object.entries(obj)) {
-        newObj[key] = fn(value)
+    for (const key in obj) {
+        newObj[key] = fn(obj[key])
     }
 
     return newObj

@@ -64,17 +64,26 @@ const parseXmlFromResponse = async response => {
     
 const processSiteUrl = (siteUrl, service) => `${siteUrl.replace(/\/$/, "")}/_vti_bin/${service}.asmx`
 
-const mapToTags = ([tagName, value]) => `<${tagName}>${value}</${tagName}>`
+const mapToTags = params => {
+    return Object.keys(params)
+        .map(tagName => `<${tagName}>${params[tagName]}</${tagName}>`)
+        .join("")
+}
 
 const generatePayload = ({items, batchCmd, ...params}) => {
-    return Object.entries(params).map(mapToTags).join("") + processUpdates(batchCmd, items)
+    return mapToTags(params) + processUpdates(batchCmd, items)
 }
 
 const processUpdates = (batchCmd, items) => {  
-    const mapToFields = ([fieldName, value]) => `<Field Name="${fieldName}">${escapeColumnValue(value)}</Field>`
+
+    const mapToFields = item => {
+        return Object.keys(item)
+            .map(fieldName => `<Field Name="${fieldName}">${escapeColumnValue(item[fieldName])}</Field>`)
+            .join("")
+    }
     const mapItemsToMethods = (item, i) => {
         return `<Method ID="${i+1}" Cmd="${batchCmd}">
-            ${Object.entries(item).map(mapToFields).join("")}        
+            ${mapToFields(item)}        
         </Method>`
     }
 
