@@ -1,9 +1,9 @@
-import {makeSoap} from './makeSoap'
-import { updateListItems, getListItems, getList } from './operations/lists'
+import { makeSoap } from './makeSoap'
+import { updateListItems, getListItems, getListItemsChanges, getList } from './operations/lists'
 import { encodeXml, listInfoXmlToJson, updateListItemsXmlToJson, getListItemsXmlToJson } from './helpers/xml'
 import CamlBuilder from './camlBuilder/caml'
 
-const {Query, EQ,  IS_NOT_NULL, Types} = CamlBuilder
+const { Query, EQ, IS_NOT_NULL, Types } = CamlBuilder
 
 const DEFAULT_QUERY_OPTIONS = `<QueryOptions>
     <ViewAttributes Scope="RecursiveAll" />
@@ -14,7 +14,7 @@ const DEFAULT_QUERY_OPTIONS = `<QueryOptions>
 export const connectToList = siteUrl => listName => {
 
     listName = encodeXml(listName)
-    
+
     const soapUpdate = batchCmd => items => {
         const requestOptions = {
             listName,
@@ -28,6 +28,11 @@ export const connectToList = siteUrl => listName => {
     }
 
     const soapGet = (select, where, options = {}) => {
+
+        const getOperation = options.withChanges ?
+            getListItemsChanges :
+            getListItems
+
         if (typeof select === 'string') select = [select]
         const staticNameToVariable = select.reduce((mapper, field) => {
             const [staticName, variable] = field.split(" AS ")
@@ -42,9 +47,10 @@ export const connectToList = siteUrl => listName => {
             query: where,
             queryOptions: options.queryOptions || DEFAULT_QUERY_OPTIONS,
             rowLimit: options.rowLimit || 0,
+            ...(options.changeToken && {changeToken: options.changeToken})
         }
 
-        return makeSoap(siteUrl, getListItems, requestOptions)
+        return makeSoap(siteUrl, getOperation, requestOptions)
             .then(xml => options.xml ?
                 xml :
                 getListItemsXmlToJson(staticNameToVariable)(xml)
@@ -54,6 +60,8 @@ export const connectToList = siteUrl => listName => {
     const all = select => soapGet(select, Query(IS_NOT_NULL('ID')))
 
     const find = (select, where) => soapGet(select, where)
+
+    const findWithChanges = ({select, where, changeToken}) => soapGet(select, where, {changeToken, withChanges: true, xml: true})
 
     const findById = (select, id) =>
         soapGet(select, Query(EQ('ID', id, Types.COUNTER)))
@@ -75,7 +83,7 @@ export const connectToList = siteUrl => listName => {
         soapUpdate("Delete")(items)
     }
 
-    const soapInfo = (options = {}) => makeSoap(siteUrl, getList, {listName})
+    const soapInfo = (options = {}) => makeSoap(siteUrl, getList, { listName })
         .then(xml => options.xml ?
             xml :
             listInfoXmlToJson(xml)
@@ -87,7 +95,7 @@ export const connectToList = siteUrl => listName => {
                 const itemCount = xml.querySelector("data").getAttribute("ItemCount")
                 return itemCount ? parseInt(itemCount) : 0
             }) :
-        soapInfo({xml: true})
+        soapInfo({ xml: true })
             .then(xml => {
                 const itemCount = xml.querySelector("List").getAttribute("ItemCount")
                 return itemCount ? parseInt(itemCount) : 0
@@ -100,6 +108,7 @@ export const connectToList = siteUrl => listName => {
         count,
         all,
         find,
+        findWithChanges,
         findById,
         findOne,
         create,

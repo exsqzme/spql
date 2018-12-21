@@ -7,6 +7,5 @@ const makeListOperationWithAction = makeOperationWithAction(LISTS)
 export const getListCollection = makeListOperation('GetListCollection')
 export const getList = makeListOperation('GetList')
 export const getListItems = makeListOperation('GetListItems')
+export const getListItemsChanges = makeListOperation('GetListItemChangeSinceToken')
 export const updateListItems = makeListOperationWithAction('UpdateListItems')
-
-const getListItemsChanges = makeListOperation('GetListItemChangeSinceToken')
