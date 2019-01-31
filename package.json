@@ -1,6 +1,6 @@
 {
   "name": "spql",
-  "version": "0.6.0",
+  "version": "0.9.0",
   "description": "Query SharePoint's Web Services",
   "main": "lib/spql.js",
   "unpkg": "dist/spql.min.js",
