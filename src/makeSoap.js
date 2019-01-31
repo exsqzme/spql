@@ -82,7 +82,7 @@ const processUpdates = (batchCmd, items) => {
             .join("")
     }
     const mapItemsToMethods = (item, i) => {
-        return `<Method ID="${i+1}" Cmd="${batchCmd}">
+        return `<Method ID="${item.ID ? item.ID : (i+1)}" Cmd="${batchCmd}">
             ${mapToFields(item)}        
         </Method>`
     }

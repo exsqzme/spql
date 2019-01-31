@@ -35,11 +35,13 @@ export const updateListItemsXmlToJson = xml => {
 	const selector = 'Result'
 	const mapFn = node => {
 		const itemNode = node.querySelector('row')
-		const errorNode = node.querySelector('ErrorText')
+		const errorCodeNode = node.querySelector('ErrorCode')
+		const errorTextNode = node.querySelector('ErrorText')
 
 		return {
-			id: itemNode && itemNode.getAttribute("ows_ID"),
-			error: errorNode && errorNode.textContent.replace(/[\n\r]+|[\s]{2,}/g, ' ').trim()
+			id: itemNode && itemNode.getAttribute('ows_ID'),
+			success: errorCodeNode.textContent === '0x00000000' || !errorTextNode,
+			error: errorTextNode && errorTextNode.textContent.replace(/[\n\r]+|[\s]{2,}/g, ' ').trim()
 		}
 	}
 

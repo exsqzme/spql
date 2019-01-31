@@ -75,12 +75,12 @@ export const connectToList = siteUrl => listName => {
 
     const updateById = (id, updates) => {
         const items = { ID: id, ...updates }
-        soapUpdate("Update")(items)
+        return soapUpdate("Update")(items)
     }
 
     const deleteById = id => {
         const items = { ID: id }
-        soapUpdate("Delete")(items)
+        return soapUpdate("Delete")(items)
     }
 
     const soapInfo = (options = {}) => makeSoap(siteUrl, getList, { listName })
