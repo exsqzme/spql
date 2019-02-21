@@ -1,15 +1,40 @@
-import {makeSoap} from './makeSoap'
-import { getListCollection } from './operations/lists'
-import { listCollectionXmlToJson } from './helpers/xml'
+import { makeSoap } from "./soap/makeSoap";
+import { getListCollection } from "./soap/web-services/lists";
+import { addDocument } from "./soap/web-services/copy";
+import { listCollectionXmlToJson, uploadDocumentXmlToJson } from "./lib/xmlUtils";
 
 const SiteServices = siteUrl => {
+  const getListCollectionInfo = () =>
+    makeSoap(siteUrl, getListCollection).then(listCollectionXmlToJson);
 
-    const getListCollectionInfo = () => makeSoap(siteUrl, getListCollection)
-        .then(listCollectionXmlToJson)
+  const uploadDocument = ({
+    fileStream,
+    fileName,
+    destination,
+    fields = []
+  }) => {
+    const requestOptions = {
+      DestinationUrls: [`${siteUrl}/${destination}/${fileName}`]
+        .map(url => `<string>${url}</string>`)
+        .join(""),
+      Stream: fileStream,
+      Fields: fields
+        .map(
+          f =>
+            `<FieldInformation Type="${f.type} DisplayName: "${
+              f.displayName
+            }" InternalName="${f.staticName}" Value="${f.value}" />`
+        )
+        .join("")
+    };
 
-    return {
-        getListCollectionInfo
-    }
-}
+    return makeSoap(siteUrl, addDocument, requestOptions).then(uploadDocumentXmlToJson).then(result => result[0])
+  };
 
-export default SiteServices
+  return {
+    getListCollectionInfo,
+    uploadDocument
+  };
+};
+
+export default SiteServices;

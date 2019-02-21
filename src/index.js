@@ -2,7 +2,7 @@ import {connectToList} from './ListServices'
 import SiteServices from './SiteServices'
 import UserServices from './UserServices'
 import AuthServices from './AuthServices'
-import CamlBuilder from './camlBuilder/caml'
+import Caml from './caml'
 
 const spql = {
     connect: siteUrl => {
@@ -18,7 +18,8 @@ const spql = {
             ...User
         }
     },
-    CamlBuilder
+    Caml
+    
 }
 
 export default spql

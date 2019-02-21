@@ -1,6 +1,6 @@
 {
   "name": "spql",
-  "version": "0.9.0",
+  "version": "0.9.5",
   "description": "Query SharePoint's Web Services",
   "main": "lib/spql.js",
   "unpkg": "dist/spql.min.js",
@@ -35,6 +35,7 @@
     "rimraf": "2.6.2",
     "rollup": "0.67.1",
     "rollup-plugin-babel": "4.0.3",
+    "rollup-plugin-node-resolve": "^4.0.0",
     "rollup-plugin-terser": "3.0.0"
   },
   "dependencies": {}

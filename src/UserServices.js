@@ -1,8 +1,8 @@
 import { connectToList } from './ListServices'
-import { getGroupCollectionFromUser, getUserCollectionFromGroup, addGroup, removeGroup, addUserCollectionToGroup, removeUserCollectionFromGroup } from './operations/usergroup'
-import CamlBuilder from './camlBuilder/caml'
-import { makeSoap } from './makeSoap';
-import { encodeXml, usersXmlToJson, groupsXmlToJson } from './helpers/xml'
+import { getGroupCollectionFromUser, getUserCollectionFromGroup, addGroup, removeGroup, addUserCollectionToGroup, removeUserCollectionFromGroup } from './soap/web-services/usergroup'
+import { makeSoap } from './soap/makeSoap'
+import { encodeXml, usersXmlToJson, groupsXmlToJson } from './lib/xmlUtils'
+import Caml from './caml'
 
 const buildUserXml = users => {
     const mapUsersToXml = userLogin => `<User LoginName="${userLogin}" />`
@@ -13,12 +13,12 @@ const UserServices = siteUrl => {
 
     const getUserById = id =>
         connectToList(siteUrl)('UserInfo')
-            .findById(
+            .findById({
                 id,
-                ['ID AS id', 'Name AS account', 'Title AS displayName', 'EMail AS email']
-            )
+                select: ['ID AS id', 'Name AS account', 'Title AS displayName', 'EMail AS email']
+            })
 
-    const getCurrentUser = () => getUserById(CamlBuilder.Values.CURRENT_USER)
+    const getCurrentUser = () => getUserById(Caml.Values.CURRENT_USER)
 
     const getGroupsFromUser = userLoginName =>
         makeSoap(siteUrl, getGroupCollectionFromUser, { userLoginName })

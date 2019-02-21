@@ -1,5 +1,6 @@
 import babel from 'rollup-plugin-babel'
 import { terser } from 'rollup-plugin-terser'
+import resolve from 'rollup-plugin-node-resolve'
 
 import pkg from './package.json'
 
@@ -12,7 +13,7 @@ export default [
             ...Object.keys(pkg.dependencies || {}),
             ...Object.keys(pkg.peerDependencies || {})
         ],
-        plugins: [babel()]
+        plugins: [resolve(), babel()]
     },
 
     // UMD Production
@@ -29,6 +30,7 @@ export default [
             ...Object.keys(pkg.peerDependencies || {})
         ],
         plugins: [
+            resolve(),
             babel({
                 exclude: 'node_modules/**'
             }),

@@ -1,9 +1,7 @@
-import { makeSoap } from './makeSoap'
-import { updateListItems, getListItems, getListItemsChanges, getList } from './operations/lists'
-import { encodeXml, listInfoXmlToJson, updateListItemsXmlToJson, getListItemsXmlToJson } from './helpers/xml'
-import CamlBuilder from './camlBuilder/caml'
-
-const { Query, EQ, IS_NOT_NULL, Types } = CamlBuilder
+import { makeSoap } from './soap/makeSoap'
+import { updateListItems, getListItems, getListItemsChanges, getList } from './soap/web-services/lists'
+import { encodeXml, listInfoXmlToJson, updateListItemsXmlToJson, getListItemsXmlToJson } from './lib/xmlUtils'
+import Caml, {toCaml} from './caml'
 
 const DEFAULT_QUERY_OPTIONS = `<QueryOptions>
     <ViewAttributes Scope="RecursiveAll" />
@@ -27,7 +25,7 @@ export const connectToList = siteUrl => listName => {
             .then(result => Array.isArray(items) ? result : result[0])
     }
 
-    const soapGet = (select, where, options = {}) => {
+    const soapGet = (select, query, options = {}) => {
 
         const getOperation = options.withChanges ?
             getListItemsChanges :
@@ -44,7 +42,7 @@ export const connectToList = siteUrl => listName => {
         const requestOptions = {
             listName,
             viewFields: transformSelectedFieldsToViewFields(Object.keys(staticNameToVariable)),
-            query: where,
+            query,
             queryOptions: options.queryOptions || DEFAULT_QUERY_OPTIONS,
             rowLimit: options.rowLimit || 0,
             ...(options.changeToken && {changeToken: options.changeToken})
@@ -57,19 +55,35 @@ export const connectToList = siteUrl => listName => {
             )
     }
 
-    const all = select => soapGet(select, Query(IS_NOT_NULL('ID')))
+    const all = ({select, orderBy, maxResults}) => {
+        const query = toCaml(Caml.IS_NOT_NULL('ID'), orderBy)
 
-    const find = (select, where) => soapGet(select, where)
+        return soapGet(select, query, {rowLimit: maxResults})
+    }
 
-    const findWithChanges = ({select, where, changeToken}) => soapGet(select, where, {changeToken, withChanges: true, xml: true})
+    const find = ({select, where, orderBy, maxResults}) => {
+        const query = toCaml(where, orderBy)
 
-    const findById = (select, id) =>
-        soapGet(select, Query(EQ('ID', id, Types.COUNTER)))
+        return soapGet(select, query, {rowLimit: maxResults})
+    }
+
+    const findWithChanges = ({select, where, changeToken}) => {
+        const query = toCaml(where)
+        return soapGet(select, query, {changeToken, withChanges: true, xml: true})
+    }
+
+    //TODO: EQ
+    const findById = ({select, id}) => {
+        const query = toCaml(Caml.EQ({fieldName: 'ID', value: id, type: Caml.Types.COUNTER}))
+        return soapGet(select, query)
             .then(([result]) => result)
+    }
 
-    const findOne = (select, where) =>
-        soapGet(select, where, { rowLimit: 1 })
+    const findOne = ({select, where}) => {
+        const query = toCaml(where)
+        return soapGet(select, query, { rowLimit: 1 })
             .then(([result]) => result)
+    }
 
     const create = soapUpdate('New')
 
@@ -89,19 +103,28 @@ export const connectToList = siteUrl => listName => {
             listInfoXmlToJson(xml)
         )
 
-    const count = (query) => query ?
-        soapGet(["ID"], query, { xml: true })
-            .then(xml => {
-                const itemCount = xml.querySelector("data").getAttribute("ItemCount")
-                return itemCount ? parseInt(itemCount) : 0
-            }) :
-        soapInfo({ xml: true })
-            .then(xml => {
-                const itemCount = xml.querySelector("List").getAttribute("ItemCount")
-                return itemCount ? parseInt(itemCount) : 0
-            })
+    const count = (where) => {
+        let resultPromise
+        let selector
 
-    const getSchema = () => soapInfo()
+        if (where) {
+            const query = toCaml(where)
+            resultPromise = soapGet(["ID"], query, { xml: true })
+            selector = "data"
+        }
+        else {
+            resultPromise = soapInfo({ xml: true })
+            selector = "List"
+        }
+
+        return resultPromise
+            .then(xml => {
+                const itemCount = xml.querySelector(selector).getAttribute("ItemCount")
+                return itemCount ? parseInt(itemCount) : 0
+            })        
+    }
+
+    const getSchema = () => soapInfo()    
 
     return {
         getSchema,
@@ -117,6 +140,7 @@ export const connectToList = siteUrl => listName => {
     }
 }
 
+// TODO: Use with caml helpers
 const transformSelectedFieldsToViewFields = (selectedFields = []) => {
     const mapFields = staticName => `<FieldRef Name="${staticName}" />`
 

@@ -1,11 +1,11 @@
-import {escapeColumnValue} from './helpers/xml'
+import {escapeColumnValue} from '../lib/xmlUtils'
 
 const SCHEMA = 'http://schemas.microsoft.com/sharepoint'
 
 export const makeSoap = (siteUrl, operation, options = {}) => {
 
-    const {name, action, service, additionalHeader} = operation
-    const soapUrl = processSiteUrl(siteUrl, service)
+    const {operationName, action, webService, additionalHeader} = operation
+    const soapUrl = processSiteUrl(siteUrl, webService)
 
     let fetchOptions = {
 		method: 'POST',
@@ -14,9 +14,9 @@ export const makeSoap = (siteUrl, operation, options = {}) => {
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
             xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
             <soap:Body>
-                <${name} xmlns="${SCHEMA}/soap/${additionalHeader}">
+                <${operationName} xmlns="${SCHEMA}/soap/${additionalHeader}">
                     ${generatePayload(options)}
-                </${name}>
+                </${operationName}>
             </soap:Body>
         </soap:Envelope>`,
         credentials: 'same-origin',
@@ -27,7 +27,7 @@ export const makeSoap = (siteUrl, operation, options = {}) => {
 	}
 	
 	if (action) {
-		fetchOptions.headers.SOAPAction = `${SCHEMA}/soap/${additionalHeader}${name}`
+		fetchOptions.headers.SOAPAction = `${SCHEMA}/soap/${additionalHeader}${operationName}`
 	}
 
     return fetchSoap(soapUrl, fetchOptions)        
@@ -62,7 +62,7 @@ const parseXmlFromResponse = async response => {
     
 }
     
-const processSiteUrl = (siteUrl, service) => `${siteUrl.replace(/\/$/, "")}/_vti_bin/${service}.asmx`
+const processSiteUrl = (siteUrl, webService) => `${siteUrl.replace(/\/$/, "")}/_vti_bin/${webService}.asmx`
 
 const mapToTags = params => {
     return Object.keys(params)
