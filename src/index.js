@@ -1,4 +1,4 @@
-import {connectToList} from './ListServices'
+import { connectToList } from './ListServices'
 import SiteServices from './SiteServices'
 import UserServices from './UserServices'
 import AuthServices from './AuthServices'
@@ -12,14 +12,14 @@ const spql = {
         const Site = SiteServices(siteUrl)
 
         return {
-            List,            
+            List,
             Auth,
             ...Site,
             ...User
         }
     },
     Caml
-    
+
 }
 
 export default spql

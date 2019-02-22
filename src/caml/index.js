@@ -4,20 +4,20 @@ import * as Values from './values'
 
 const toFieldRef = (properties = []) => {
     const fieldRefProps = properties.map(p => `${p.name}="${p.value}"`)
-    
-    return  `<FieldRef ${fieldRefProps.join(" ")} />`    
+
+    return `<FieldRef ${fieldRefProps.join(" ")} />`
 }
 
 const toNameFieldRef = name => {
-    const props = [{name: 'Name', value: name}]
+    const props = [{ name: 'Name', value: name }]
     return toFieldRef(props)
-}    
+}
 
 const toValue = (type = Types.TEXT) =>
     value =>
         `<Value Type="${type}">${value}</Value>`
 
-const TagBuilder = tag => { 
+const TagBuilder = tag => {
     switch (tag) {
         case Tags.AND:
         case Tags.OR:
@@ -27,27 +27,39 @@ const TagBuilder = tag => {
             return field =>
                 `<${tag}>${toNameFieldRef(field)}</${tag}>`
         case Tags.IN:
-            return ({field, values, type}) =>
-                `<${tag}>${toNameFieldRef(field)}<Values>${values.map(toValue(type)).join('')}</Values></${tag}>`
         case Tags.EQ:
         case Tags.NEQ:
         case Tags.GT:
         case Tags.LT:
         case Tags.GEQ:
         case Tags.LEQ:
-        case Tags.CONTAINS:        
-            return ({field, value, type}) =>
-                `<${tag}>${toNameFieldReff(field) + toValue(type)(value)}</${tag}>`      
+        case Tags.CONTAINS:
+            return ({ field, value, type, byId = false }) => {
+                let fieldProps = [{ name: "Name", value: field }]
+                if (type === "Lookup") {
+                    fieldProps.push({ name: "LookupId", value: byId ? "TRUE" : "FALSE" })
+                }
+                let camlField = toFieldRef(fieldProps)
+
+                const toValueWithType = toValue(type)
+                const camlValue = Array.isArray(value)
+                    ? `<Values>${values.map(toValueWithType).join("")}</Values`
+                    : toValueWithType(value)
+
+                return `<${tag}>${camlField + camlValue}</${tag}>`
+            }
     }
+
+
 
     throw new Error(`Invalid Tag Provided: ${tag}`)
 }
 
- const withOrder = fields => {
-     if (typeof fields === "object") {
-         fields = [fields]
-     }
-    return `<OrderBy>${toFieldRef(fields.map(f => ({Name: f.name, Ascending: f.isAscending ? 'TRUE' : 'FALSE'})))}</OrderBy>`
+const withOrder = fields => {
+    if (typeof fields === "object") {
+        fields = [fields]
+    }
+    return `<OrderBy>${toFieldRef(fields.map(f => ({ Name: f.name, Ascending: f.isAscending ? 'TRUE' : 'FALSE' })))}</OrderBy>`
 }
 
 export const toCaml = (query, orderBy = "") =>
@@ -67,7 +79,7 @@ const TagFns = mapObj(TagBuilder, Tags)
 
 const eqUser = userId =>
     field =>
-        TagFns.EQ({field, value: userId, type: Types.INTEGER})
+        TagFns.EQ({ field, value: userId, type: Types.INTEGER })
 
 const Caml = {
     Types,

@@ -60,7 +60,7 @@ export const getListItemsXmlToJson = fieldMap => {
 
 		return properties
 	}
-	
+
 	return processXml(mapFn, selector)
 }
 
@@ -100,7 +100,7 @@ export const listInfoXmlToJson = xml => {
 const choicesXmlToJson = xml => {
 
 	const selector = 'CHOICE'
-	const mapFn = node => ({value: node.textContent, displayValue: node.textContent})
+	const mapFn = node => ({ value: node.textContent, displayValue: node.textContent })
 
 	return processXml(mapFn, selector)(xml)
 }
@@ -108,7 +108,7 @@ const choicesXmlToJson = xml => {
 export const listCollectionXmlToJson = processXml(
 	node => ({
 		id: node.getAttribute('ID'),
-		name: node.getAttribute('Title'),		
+		name: node.getAttribute('Title'),
 		siteUrl: node.getAttribute('WebFullUrl'),
 		description: node.getAttribute('Description'),
 		createdBy: node.getAttribute('Author'),
@@ -147,7 +147,7 @@ export const uploadDocumentXmlToJson = processXml(
 
 		return {
 			success: errorCode === 'Success',
-			error: !success ? errorCode : null 
+			error: !success ? errorCode : null
 		}
 	},
 	'CopyResult'

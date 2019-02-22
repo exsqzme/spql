@@ -28,7 +28,7 @@ const UserServices = siteUrl => {
         makeSoap(siteUrl, getUserCollectionFromGroup, { groupName: encodeXml(groupName) })
             .then(usersXmlToJson)
 
-    const createGroup = ({name, description = '', owner, ownerIsGroup = false, defaultUserLoginName}) => {
+    const createGroup = ({ name, description = '', owner, ownerIsGroup = false, defaultUserLoginName }) => {
         const groupInfo = {
             groupName: encodeXml(name),
             description: encodeXml(description),
@@ -40,31 +40,31 @@ const UserServices = siteUrl => {
         return makeSoap(siteUrl, addGroup, groupInfo)
     }
 
-    const deleteGroup = groupName => makeSoap(siteUrl, removeGroup, {groupName})
+    const deleteGroup = groupName => makeSoap(siteUrl, removeGroup, { groupName })
 
     const addUserToGroup = (groupName, userLogin) => {
         if (typeof userLogin === 'string') userLogin = [userLogin]
-        return makeSoap(siteUrl, addUserCollectionToGroup, {groupName, usersInfoXml: buildUserXml(userLogin)})
+        return makeSoap(siteUrl, addUserCollectionToGroup, { groupName, usersInfoXml: buildUserXml(userLogin) })
             .then(() => true)
             .catch(console.log)
     }
 
     const deleteUserFromGroup = (groupName, userLogin) => {
         if (typeof userLogin === 'string') userLogin = [userLogin]
-        return makeSoap(siteUrl, removeUserCollectionFromGroup, {groupName, userLoginNamesXml: buildUserXml(userLogin)})
+        return makeSoap(siteUrl, removeUserCollectionFromGroup, { groupName, userLoginNamesXml: buildUserXml(userLogin) })
     }
 
     return {
-            getUserById,
-            getCurrentUser,
-            getGroupsFromUser,
-            getUsersInGroup,
-            createGroup,
-            deleteGroup,
-            addUserToGroup,
-            deleteUserFromGroup
-        }
-
+        getUserById,
+        getCurrentUser,
+        getGroupsFromUser,
+        getUsersInGroup,
+        createGroup,
+        deleteGroup,
+        addUserToGroup,
+        deleteUserFromGroup
     }
 
-    export default UserServices
+}
+
+export default UserServices

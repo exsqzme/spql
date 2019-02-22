@@ -23,7 +23,7 @@ const SiteServices = siteUrl => {
         .map(
           f =>
             `<FieldInformation Type="${f.type} DisplayName: "${
-              f.displayName
+            f.displayName
             }" InternalName="${f.staticName}" Value="${f.value}" />`
         )
         .join("")

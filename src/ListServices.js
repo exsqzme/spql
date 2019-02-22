@@ -1,7 +1,7 @@
 import { makeSoap } from './soap/makeSoap'
 import { updateListItems, getListItems, getListItemsChanges, getList } from './soap/web-services/lists'
 import { encodeXml, listInfoXmlToJson, updateListItemsXmlToJson, getListItemsXmlToJson } from './utils/xml'
-import Caml, {toCaml} from './caml'
+import Caml, { toCaml } from './caml'
 
 const DEFAULT_QUERY_OPTIONS = `<QueryOptions>
     <ViewAttributes Scope="RecursiveAll" />
@@ -45,7 +45,7 @@ export const connectToList = siteUrl => listName => {
             query,
             queryOptions: options.queryOptions || DEFAULT_QUERY_OPTIONS,
             rowLimit: options.rowLimit || 0,
-            ...(options.changeToken && {changeToken: options.changeToken})
+            ...(options.changeToken && { changeToken: options.changeToken })
         }
 
         return makeSoap(siteUrl, getOperation, requestOptions)
@@ -55,31 +55,31 @@ export const connectToList = siteUrl => listName => {
             )
     }
 
-    const all = ({select, orderBy, maxResults}) => {
+    const all = ({ select, orderBy, maxResults }) => {
         const query = toCaml(Caml.IS_NOT_NULL('ID'), orderBy)
 
-        return soapGet(select, query, {rowLimit: maxResults})
+        return soapGet(select, query, { rowLimit: maxResults })
     }
 
-    const find = ({select, where, orderBy, maxResults}) => {
+    const find = ({ select, where, orderBy, maxResults }) => {
         const query = toCaml(where, orderBy)
 
-        return soapGet(select, query, {rowLimit: maxResults})
+        return soapGet(select, query, { rowLimit: maxResults })
     }
 
-    const findWithChanges = ({select, where, changeToken}) => {
+    const findWithChanges = ({ select, where, changeToken }) => {
         const query = toCaml(where)
-        return soapGet(select, query, {changeToken, withChanges: true, xml: true})
+        return soapGet(select, query, { changeToken, withChanges: true, xml: true })
     }
 
     //TODO: EQ
-    const findById = ({select, id}) => {
-        const query = toCaml(Caml.EQ({fieldName: 'ID', value: id, type: Caml.Types.COUNTER}))
+    const findById = ({ select, id }) => {
+        const query = toCaml(Caml.EQ({ fieldName: 'ID', value: id, type: Caml.Types.COUNTER }))
         return soapGet(select, query)
             .then(([result]) => result)
     }
 
-    const findOne = ({select, where}) => {
+    const findOne = ({ select, where }) => {
         const query = toCaml(where)
         return soapGet(select, query, { rowLimit: 1 })
             .then(([result]) => result)
@@ -121,10 +121,10 @@ export const connectToList = siteUrl => listName => {
             .then(xml => {
                 const itemCount = xml.querySelector(selector).getAttribute("ItemCount")
                 return itemCount ? parseInt(itemCount) : 0
-            })        
+            })
     }
 
-    const getSchema = () => soapInfo()    
+    const getSchema = () => soapInfo()
 
     return {
         getSchema,

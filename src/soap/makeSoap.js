@@ -1,15 +1,15 @@
-import {escapeColumnValue} from '../utils/xml'
+import { escapeColumnValue } from '../utils/xml'
 
 const SCHEMA = 'http://schemas.microsoft.com/sharepoint'
 
 export const makeSoap = (siteUrl, operation, options = {}) => {
 
-    const {operationName, action, webService, additionalHeader} = operation
+    const { operationName, action, webService, additionalHeader } = operation
     const soapUrl = processSiteUrl(siteUrl, webService)
 
     let fetchOptions = {
-		method: 'POST',
-		body: `<soap:Envelope
+        method: 'POST',
+        body: `<soap:Envelope
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
             xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
@@ -20,22 +20,22 @@ export const makeSoap = (siteUrl, operation, options = {}) => {
             </soap:Body>
         </soap:Envelope>`,
         credentials: 'same-origin',
-		headers: {
+        headers: {
             'Accept': 'text/plain',
-			'Content-Type': 'text/xml;charset="utf-8"'
-		}
-	}
-	
-	if (action) {
-		fetchOptions.headers.SOAPAction = `${SCHEMA}/soap/${additionalHeader}${operationName}`
-	}
+            'Content-Type': 'text/xml;charset="utf-8"'
+        }
+    }
 
-    return fetchSoap(soapUrl, fetchOptions)        
+    if (action) {
+        fetchOptions.headers.SOAPAction = `${SCHEMA}/soap/${additionalHeader}${operationName}`
+    }
+
+    return fetchSoap(soapUrl, fetchOptions)
 }
 
 const fetchSoap = async (url, options) => {
     const response = await fetch(url, options)
-    const {status} = response
+    const { status } = response
     const xml = await parseXmlFromResponse(response)
 
     if (status !== 200) {
@@ -53,15 +53,15 @@ const parseXmlFromResponse = async response => {
     try {
         const oParser = new DOMParser()
         const xmlData = oParser.parseFromString(text, "application/xml")
-        
+
         return xmlData
     } catch (err) {
         // Throw XML Type Error
         throw new Error('Unable to parse xml')
     }
-    
+
 }
-    
+
 const processSiteUrl = (siteUrl, webService) => `${siteUrl.replace(/\/$/, "")}/_vti_bin/${webService}.asmx`
 
 const mapToTags = params => {
@@ -70,11 +70,11 @@ const mapToTags = params => {
         .join("")
 }
 
-const generatePayload = ({items, batchCmd, ...params}) => {
+const generatePayload = ({ items, batchCmd, ...params }) => {
     return mapToTags(params) + processUpdates(batchCmd, items)
 }
 
-const processUpdates = (batchCmd, items) => {  
+const processUpdates = (batchCmd, items) => {
 
     const mapToFields = item => {
         return Object.keys(item)
@@ -82,7 +82,7 @@ const processUpdates = (batchCmd, items) => {
             .join("")
     }
     const mapItemsToMethods = (item, i) => {
-        return `<Method ID="${item.ID ? item.ID : (i+1)}" Cmd="${batchCmd}">
+        return `<Method ID="${item.ID ? item.ID : (i + 1)}" Cmd="${batchCmd}">
             ${mapToFields(item)}        
         </Method>`
     }
