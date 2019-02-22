@@ -1,6 +1,6 @@
 import { makeSoap } from './soap/makeSoap'
 import { updateListItems, getListItems, getListItemsChanges, getList } from './soap/web-services/lists'
-import { encodeXml, listInfoXmlToJson, updateListItemsXmlToJson, getListItemsXmlToJson } from './lib/xmlUtils'
+import { encodeXml, listInfoXmlToJson, updateListItemsXmlToJson, getListItemsXmlToJson } from './utils/xml'
 import Caml, {toCaml} from './caml'
 
 const DEFAULT_QUERY_OPTIONS = `<QueryOptions>

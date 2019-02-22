@@ -1,4 +1,4 @@
-import {escapeColumnValue} from '../lib/xmlUtils'
+import {escapeColumnValue} from '../utils/xml'
 
 const SCHEMA = 'http://schemas.microsoft.com/sharepoint'
 

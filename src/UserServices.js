@@ -1,7 +1,7 @@
 import { connectToList } from './ListServices'
 import { getGroupCollectionFromUser, getUserCollectionFromGroup, addGroup, removeGroup, addUserCollectionToGroup, removeUserCollectionFromGroup } from './soap/web-services/usergroup'
 import { makeSoap } from './soap/makeSoap'
-import { encodeXml, usersXmlToJson, groupsXmlToJson } from './lib/xmlUtils'
+import { encodeXml, usersXmlToJson, groupsXmlToJson } from './utils/xml'
 import Caml from './caml'
 
 const buildUserXml = users => {

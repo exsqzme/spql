@@ -1,4 +1,4 @@
-import {createWebService} from '../../lib/soapUtils'
+import {createWebService} from '../../utils/soap'
 
 const webService = 'lists'
 const createWebServiceOperation = createWebService(webService)

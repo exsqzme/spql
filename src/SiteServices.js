@@ -1,7 +1,8 @@
 import { makeSoap } from "./soap/makeSoap";
 import { getListCollection } from "./soap/web-services/lists";
 import { addDocument } from "./soap/web-services/copy";
-import { listCollectionXmlToJson, uploadDocumentXmlToJson } from "./lib/xmlUtils";
+import { listCollectionXmlToJson, uploadDocumentXmlToJson } from "./utils/xml"
+
 
 const SiteServices = siteUrl => {
   const getListCollectionInfo = () =>
