@@ -24,25 +24,28 @@ const TagBuilder = tag => {
             return (childTag1, childTag2) => `<${tag}>${childTag1}${childTag2}</${tag}>`
         case Tags.IS_NULL:
         case Tags.IS_NOT_NULL:
-            return fieldName =>
-                `<${tag}>${toNameFieldRef(fieldName)}</${tag}>`
+            return field =>
+                `<${tag}>${toNameFieldRef(field)}</${tag}>`
         case Tags.IN:
-            return ({fieldName, values, type}) =>
-                `<${tag}>${toNameFieldRef(fieldName)}<Values>${values.map(toValue(type)).join('')}</Values></${tag}>`
+            return ({field, values, type}) =>
+                `<${tag}>${toNameFieldRef(field)}<Values>${values.map(toValue(type)).join('')}</Values></${tag}>`
         case Tags.EQ:
         case Tags.NEQ:
         case Tags.GT:
         case Tags.LT:
         case Tags.GEQ:
         case Tags.LEQ:        
-            return ({fieldName, value, type}) =>
-                `<${tag}>${toNameFieldReff(fieldName) + toValue(type)(value)}</${tag}>`      
+            return ({field, value, type}) =>
+                `<${tag}>${toNameFieldReff(field) + toValue(type)(value)}</${tag}>`      
     }
 
     throw new Error(`Invalid Tag Provided: ${tag}`)
 }
 
  const withOrder = fields => {
+     if (typeof fields === "object") {
+         fields = [fields]
+     }
     return `<OrderBy>${toFieldRef(fields.map(f => ({Name: f.name, Ascending: f.isAscending ? 'TRUE' : 'FALSE'})))}</OrderBy>`
 }
 
@@ -62,15 +65,15 @@ const mapObj = (fn, obj) => {
 const TagFns = mapObj(TagBuilder, Tags)
 
 const eqUser = userId =>
-    fieldName =>
-        TagFns.EQ({fieldName, value: userId, type: Types.INTEGER})
+    field =>
+        TagFns.EQ({field, value: userId, type: Types.INTEGER})
 
 const Caml = {
     Types,
     Values,
     ...TagFns,
-    EQ_USER: (fieldName, userId) => eqUser(userId)(fieldName),
-    EQ_CURRENT_USER: (fieldName) => eqUser(Values.CURRENT_USER)(fieldName),
+    EQ_USER: (field, userId) => eqUser(userId)(field),
+    EQ_CURRENT_USER: (field) => eqUser(Values.CURRENT_USER)(field),
 }
 
 export default Caml
