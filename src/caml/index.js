@@ -34,7 +34,8 @@ const TagBuilder = tag => {
         case Tags.GT:
         case Tags.LT:
         case Tags.GEQ:
-        case Tags.LEQ:        
+        case Tags.LEQ:
+        case Tags.CONTAINS:        
             return ({field, value, type}) =>
                 `<${tag}>${toNameFieldReff(field) + toValue(type)(value)}</${tag}>`      
     }
