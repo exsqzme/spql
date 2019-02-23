@@ -56,10 +56,12 @@ const TagBuilder = tag => {
 }
 
 const withOrder = fields => {
-    if (typeof fields === "object") {
+    if (typeof fields === "object" && !Array.isArray(fields)) {
         fields = [fields]
     }
-    return `<OrderBy>${toFieldRef(fields.map(f => ({ Name: f.name, Ascending: f.isAscending ? 'TRUE' : 'FALSE' })))}</OrderBy>`
+    const fieldArray = fields.map(f => ({ Name: f.name, Ascending: (typeof f.isAscending === 'boolean' && !f.isAscending) ? 'FALSE' : 'TRUE' }))
+
+    return `<OrderBy>${toFieldRef(fieldArray)}</OrderBy>`
 }
 
 export const toCaml = (query, orderBy = "") =>
