@@ -50,16 +50,24 @@ const TagBuilder = tag => {
             }
     }
 
-
-
     throw new Error(`Invalid Tag Provided: ${tag}`)
 }
 
 const withOrder = fields => {
-    if (typeof fields === "object" && !Array.isArray(fields)) {
+    if (!Array.isArray(fields)) [
         fields = [fields]
-    }
-    const fieldArray = fields.map(f => ({ Name: f.name, Ascending: (typeof f.isAscending === 'boolean' && !f.isAscending) ? 'FALSE' : 'TRUE' }))
+    ]
+
+    const fieldArray = fields.map(f => {
+        if (typeof fields === 'string') {
+            return {Name: f, Ascending: "TRUE"}
+        }
+
+        return {
+            Name: f.name,
+            Ascending: (typeof f.isAscending === 'boolean' && !f.isAscending) ? 'FALSE' : 'TRUE'
+        }
+    })
 
     return `<OrderBy>${toFieldRef(fieldArray)}</OrderBy>`
 }
