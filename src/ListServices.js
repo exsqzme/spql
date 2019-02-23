@@ -31,12 +31,18 @@ export const connectToList = siteUrl => listName => {
             getListItemsChanges :
             getListItems
 
-        if (typeof select === 'string') select = [select]
-        const staticNameToVariable = select.reduce((mapper, field) => {
-            const [staticName, variable] = field.split(" AS ")
-            mapper[staticName] = variable || staticName
+        if (!Array.isArray(select)) {
+            select = [select]
+        }
 
-            return mapper
+        const staticNameToVariable = select.reduce((acc, field) => {
+            if (typeof field === 'string') {
+                acc[field] = field
+            } else {
+                const {field: name, alias} = field
+                acc[name] = alias || name
+            }
+            return acc
         }, {})
 
         const requestOptions = {
@@ -79,6 +85,7 @@ export const connectToList = siteUrl => listName => {
             .then(([result]) => result)
     }
 
+    // TODO: Return Empty Obj if not found ??
     const findOne = ({ select, where }) => {
         const query = toCaml(where)
         return soapGet(select, query, { rowLimit: 1 })
