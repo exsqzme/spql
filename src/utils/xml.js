@@ -1,3 +1,5 @@
+import * as Types from '../caml/types'
+
 const specialCharacterToEscapedCharacter = {
 	'&': '&amp;',
 	'"': '&quot;',
@@ -52,17 +54,46 @@ export const getListItemsXmlToJson = fieldMap => {
 
 	const selector = 'row'
 	const mapFn = node => {
-		let properties = {}
-		for (const staticName in fieldMap) {
-			const variable = fieldMap[staticName]
-			properties[variable] = node.getAttribute(`ows_${staticName}`)
-		}
-
-		return properties
+		return fieldMap.reduce((props, {staticName, alias, type}) => {			
+			const stringValue = node.getAttribute(`ows_${staticName}`)
+			props[alias || staticName] = processStringValueByType(stringValue, type)
+			return props
+		}, {})
 	}
 
 	return processXml(mapFn, selector)
 }
+
+const processStringValueByType = (stringValue, type) => {
+	switch (type) {
+		case Types.BOOLEAN:
+			return stringValue === "1" || (stringValue === "0" ? false : null)
+		case Types.MULTICHOICE:
+			return stringValue
+				?	stringValue.slice(2, stringValue.length-2).split(';#')
+				: []
+		case Types.USER:
+		case Types.LOOKUP:
+			return stringValue
+				? stringValue.split(";#").reduce((id, value) => ({id, value}))
+				: null
+		case Types.USERMULTI:
+		case Types.LOOKUPMULTI:
+			return stringValue
+				? stringValue.split(";#").reduce((acc, val, i) => {
+					if (i % 2) {
+						acc[acc.length-1].value = val
+					} else {
+						acc.push({id: val})
+					}
+					return acc
+				}, [])
+				: []
+		default:
+				return stringValue
+	}
+}
+
 
 export const listInfoXmlToJson = xml => {
 

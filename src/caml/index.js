@@ -8,8 +8,8 @@ const toFieldRef = (properties = []) => {
     return `<FieldRef ${fieldRefProps.join(" ")} />`
 }
 
-const toNameFieldRef = name => {
-    const props = [{ name: 'Name', value: name }]
+const toNameFieldRef = staticName => {
+    const props = [{ name: 'Name', value: staticName }]
     return toFieldRef(props)
 }
 
@@ -24,8 +24,8 @@ const TagBuilder = tag => {
             return (childTag1, childTag2) => `<${tag}>${childTag1}${childTag2}</${tag}>`
         case Tags.IS_NULL:
         case Tags.IS_NOT_NULL:
-            return field =>
-                `<${tag}>${toNameFieldRef(field)}</${tag}>`
+            return staticName =>
+                `<${tag}>${toNameFieldRef(staticName)}</${tag}>`
         case Tags.IN:
         case Tags.EQ:
         case Tags.NEQ:
@@ -34,8 +34,8 @@ const TagBuilder = tag => {
         case Tags.GEQ:
         case Tags.LEQ:
         case Tags.CONTAINS:
-            return ({ field, value, type, byId = false }) => {
-                let fieldProps = [{ name: "Name", value: field }]
+            return ({ staticName, value, type, byId = false }) => {
+                let fieldProps = [{ name: "Name", value: staticName }]
                 if (type === "Lookup") {
                     fieldProps.push({ name: "LookupId", value: byId ? "TRUE" : "FALSE" })
                 }
@@ -54,9 +54,9 @@ const TagBuilder = tag => {
 }
 
 const withOrder = fields => {
-    if (!Array.isArray(fields)) [
+    if (!Array.isArray(fields)) {
         fields = [fields]
-    ]
+    }
 
     const fieldArray = fields.map(f => {
         if (typeof fields === 'string') {
@@ -64,7 +64,7 @@ const withOrder = fields => {
         }
 
         return {
-            Name: f.name,
+            Name: f.staticName,
             Ascending: (typeof f.isAscending === 'boolean' && !f.isAscending) ? 'FALSE' : 'TRUE'
         }
     })

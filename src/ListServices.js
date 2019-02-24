@@ -35,19 +35,17 @@ export const connectToList = siteUrl => listName => {
             select = [select]
         }
 
-        const staticNameToVariable = select.reduce((acc, field) => {
-            if (typeof field === 'string') {
-                acc[field] = field
+        const fieldMap = select.map(selected => {
+            if (typeof selected === 'string') {
+                return {staticName: selected}
             } else {
-                const {field: name, alias} = field
-                acc[name] = alias || name
+                return selected
             }
-            return acc
-        }, {})
+        })
 
         const requestOptions = {
             listName,
-            viewFields: transformSelectedFieldsToViewFields(Object.keys(staticNameToVariable)),
+            viewFields: transformSelectedFieldsToViewFields(fieldMap),
             query,
             queryOptions: options.queryOptions || DEFAULT_QUERY_OPTIONS,
             rowLimit: options.rowLimit || 0,
@@ -57,7 +55,7 @@ export const connectToList = siteUrl => listName => {
         return makeSoap(siteUrl, getOperation, requestOptions)
             .then(xml => options.xml ?
                 xml :
-                getListItemsXmlToJson(staticNameToVariable)(xml)
+                getListItemsXmlToJson(fieldMap)(xml)
             )
     }
 
@@ -149,7 +147,7 @@ export const connectToList = siteUrl => listName => {
 
 // TODO: Use with caml helpers
 const transformSelectedFieldsToViewFields = (selectedFields = []) => {
-    const mapFields = staticName => `<FieldRef Name="${staticName}" />`
+    const mapFields = ({staticName}) => `<FieldRef Name="${staticName}" />`
 
     return `<ViewFields Properties="True">
         <FieldRef Name="MetaInfo" />
