@@ -50,6 +50,7 @@
   "devDependencies": {
     "@babel/core": "7.1.6",
     "@babel/preset-env": "7.1.6",
+    "babel-eslint": "^10.0.1",
     "eslint": "^5.14.1",
     "eslint-config-prettier": "^4.0.0",
     "fast-async": "6.3.8",
@@ -63,6 +64,5 @@
     "rollup-plugin-babel": "4.0.3",
     "rollup-plugin-node-resolve": "^4.0.0",
     "rollup-plugin-terser": "3.0.0"
-  },
-  "dependencies": {}
+  }
 }

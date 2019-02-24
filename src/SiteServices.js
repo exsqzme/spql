@@ -1,12 +1,11 @@
-import { makeSoap } from "./soap/makeSoap";
-import { getListCollection } from "./soap/web-services/lists";
-import { addDocument } from "./soap/web-services/copy";
+import { makeSoap } from "./soap/makeSoap"
+import { getListCollection } from "./soap/web-services/lists"
+import { addDocument } from "./soap/web-services/copy"
 import { listCollectionXmlToJson, uploadDocumentXmlToJson } from "./utils/xml"
-
 
 const SiteServices = siteUrl => {
   const getListCollectionInfo = () =>
-    makeSoap(siteUrl, getListCollection).then(listCollectionXmlToJson);
+    makeSoap(siteUrl, getListCollection).then(listCollectionXmlToJson)
 
   const uploadDocument = ({
     fileStream,
@@ -23,19 +22,21 @@ const SiteServices = siteUrl => {
         .map(
           f =>
             `<FieldInformation Type="${f.type} DisplayName: "${
-            f.displayName
+              f.displayName
             }" InternalName="${f.staticName}" Value="${f.value}" />`
         )
         .join("")
-    };
+    }
 
-    return makeSoap(siteUrl, addDocument, requestOptions).then(uploadDocumentXmlToJson).then(result => result[0])
-  };
+    return makeSoap(siteUrl, addDocument, requestOptions)
+      .then(uploadDocumentXmlToJson)
+      .then(result => result[0])
+  }
 
   return {
     getListCollectionInfo,
     uploadDocument
-  };
-};
+  }
+}
 
-export default SiteServices;
+export default SiteServices
