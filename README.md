@@ -15,7 +15,7 @@ import spql from "spql";
 The UMD build is also available on [unpkg](https://unpkg.com):
 
 ```html
-<script src="https://unpkg.com/spql/dist/spql.min.js"></script>
+<script src="https://unpkg.com/spql@1/dist/spql.min.js"></script>
 ```
 
 You can find the library on `window.spql`.
