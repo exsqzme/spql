@@ -61,18 +61,22 @@ const withOrder = fields => {
   }
 
   const fieldArray = fields.map(f => {
+    let fieldProps
     if (typeof f === "string") {
-      return { Name: f, Ascending: "TRUE" }
+      fieldProps = { Name: f, Ascending: "TRUE" }
+    } else {
+      fieldProps = {
+        Name: f.staticName,
+        Ascending:
+          typeof f.isAscending === "boolean" && !f.isAscending
+            ? "FALSE"
+            : "TRUE"
+      }
     }
-
-    return {
-      Name: f.staticName,
-      Ascending:
-        typeof f.isAscending === "boolean" && !f.isAscending ? "FALSE" : "TRUE"
-    }
+    return toFieldRef(fieldProps)
   })
 
-  return `<OrderBy>${toFieldRef(fieldArray)}</OrderBy>`
+  return `<OrderBy>${fieldArray.join("")}</OrderBy>`
 }
 
 export const toCaml = (query, orderBy = "") =>
