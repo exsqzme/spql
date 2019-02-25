@@ -2,14 +2,16 @@ import * as Types from "./types"
 import * as Tags from "./tags"
 import * as Values from "./values"
 
-const toFieldRef = (properties = []) => {
-  const fieldRefProps = properties.map(p => `${p.name}="${p.value}"`)
+const toFieldRef = (properties = {}) => {
+  const fieldRefProps = Object.keys(properties).map(
+    prop => `${prop}="${properties[prop]}"`
+  )
 
   return `<FieldRef ${fieldRefProps.join(" ")} />`
 }
 
 const toNameFieldRef = staticName => {
-  const props = [{ name: "Name", value: staticName }]
+  const props = { Name: staticName }
   return toFieldRef(props)
 }
 
@@ -34,9 +36,9 @@ const TagBuilder = tag => {
     case Tags.LEQ:
     case Tags.CONTAINS:
       return ({ staticName, value, type, byId = false }) => {
-        let fieldProps = [{ name: "Name", value: staticName }]
+        let fieldProps = { Name: staticName }
         if (type === "Lookup") {
-          fieldProps.push({ name: "LookupId", value: byId ? "TRUE" : "FALSE" })
+          fieldProps["LookupId"] = byId ? "TRUE" : "FALSE"
         }
         let camlField = toFieldRef(fieldProps)
 
