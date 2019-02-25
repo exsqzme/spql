@@ -59,7 +59,7 @@ const withOrder = fields => {
   }
 
   const fieldArray = fields.map(f => {
-    if (typeof fields === "string") {
+    if (typeof f === "string") {
       return { Name: f, Ascending: "TRUE" }
     }
 
