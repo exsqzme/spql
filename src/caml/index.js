@@ -45,7 +45,7 @@ const TagBuilder = tag => {
         const toValueWithType = toValue(type)
         // TODO: value array only compatible with IN tag
         const camlValue = Array.isArray(value)
-          ? `<Values>${value.map(toValueWithType).join("")}</Values`
+          ? `<Values>${value.map(toValueWithType).join("")}</Values>`
           : toValueWithType(value)
 
         return `<${tag}>${camlField + camlValue}</${tag}>`
