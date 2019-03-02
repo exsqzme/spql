@@ -56,11 +56,16 @@ export const updateListItemsXmlToJson = xml => {
 export const getListItemsXmlToJson = fieldMap => {
   const selector = "row"
   const mapFn = node => {
-    return fieldMap.reduce((props, { staticName, alias, type }) => {
-      const stringValue = node.getAttribute(`ows_${staticName}`)
-      props[alias || staticName] = processStringValueByType(stringValue, type)
-      return props
-    }, {})
+    return fieldMap.reduce(
+      (props, { staticName, alias, type, mapFn = val => val }) => {
+        const stringValue = node.getAttribute(`ows_${staticName}`)
+        props[alias || staticName] = mapFn(
+          processStringValueByType(stringValue, type)
+        )
+        return props
+      },
+      {}
+    )
   }
 
   return processXml(mapFn, selector)
@@ -91,6 +96,8 @@ const processStringValueByType = (stringValue, type) => {
             return acc
           }, [])
         : []
+    case Types.DATETIME:
+      return stringValue ? new Date(stringValue.replace(/-/g, "/")) : null
     default:
       return stringValue
   }
