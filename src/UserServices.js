@@ -21,10 +21,22 @@ const UserServices = siteUrl => {
     connectToList(siteUrl)("UserInfo").findById({
       id,
       select: [
-        "ID AS id",
-        "Name AS account",
-        "Title AS displayName",
-        "EMail AS email"
+        {
+          staticName: "ID",
+          alias: "id"
+        },
+        {
+          staticName: "Name",
+          alias: "account"
+        },
+        {
+          staticName: "Title",
+          alias: "displayName"
+        },
+        {
+          staticName: "EMail",
+          alias: "email"
+        }
       ]
     })
 
