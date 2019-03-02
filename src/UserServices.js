@@ -98,19 +98,23 @@ const UserServices = siteUrl => {
     }).then(checkXmlForErrors)
   }
 
-  const isUserInGroup = (id, groupId) =>
-    getUserById(id).then(({ account }) =>
+  const isUserInGroup = (userId, groupId) => {
+    const groupIds = Array.isArray(groupId) ? groupId : [groupId]
+    return getUserById(userId).then(({ account }) =>
       getGroupsFromUser(account).then(
-        groups => groups && groups.some(g => g.id == groupId)
+        groups => groups && groups.some(g => groupIds.indexOf(g.id) > -1)
       )
     )
+  }
 
-  const isCurrentUserInGroup = groupId =>
-    getCurrentUser().then(({ account }) =>
+  const isCurrentUserInGroup = groupId => {
+    const groupIds = Array.isArray(groupId) ? groupId : [groupId]
+    return getCurrentUser().then(({ account }) =>
       getGroupsFromUser(account).then(
-        groups => groups && groups.some(g => g.id == groupId)
+        groups => groups && groups.some(g => groupIds.indexOf(g.id) > -1)
       )
     )
+  }
 
   return {
     getUserById,
