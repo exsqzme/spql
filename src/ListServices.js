@@ -79,7 +79,7 @@ export const connectToList = siteUrl => listName => {
 
   const findById = ({ select, id }) => {
     const query = toCaml(
-      Caml.EQ({ fieldName: "ID", value: id, type: Caml.Types.COUNTER })
+      Caml.EQ({ staticName: "ID", value: id, type: Caml.Types.COUNTER })
     )
     return soapGet(select, query).then(([result]) => result)
   }
