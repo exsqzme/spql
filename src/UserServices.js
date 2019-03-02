@@ -98,6 +98,20 @@ const UserServices = siteUrl => {
     }).then(checkXmlForErrors)
   }
 
+  const isUserInGroup = (id, groupId) =>
+    getUserById(id).then(({ account }) =>
+      getGroupsFromUser(account).then(
+        groups => groups && groups.some(g => g.id == groupId)
+      )
+    )
+
+  const isCurrentUserInGroup = groupId =>
+    getCurrentUser().then(({ account }) =>
+      getGroupsFromUser(account).then(
+        groups => groups && groups.some(g => g.id == groupId)
+      )
+    )
+
   return {
     getUserById,
     getCurrentUser,
@@ -106,7 +120,9 @@ const UserServices = siteUrl => {
     createGroup,
     deleteGroup,
     addUsersToGroup,
-    deleteUsersFromGroup
+    deleteUsersFromGroup,
+    isUserInGroup,
+    isCurrentUserInGroup
   }
 }
 
