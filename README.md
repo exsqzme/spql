@@ -1,6 +1,6 @@
 # SpQL
 
-SpQL is an easier way of querying SharePoint's web servies. It abstracts away a lot the complexity and redundancy of constructing SOAP requests into an easy to use API.
+SpQL is an easier way of querying SharePoint's web services. It abstracts away a lot the complexity and redundancy of constructing SOAP requests into an easy to use API.
 
 ## Installation
 
