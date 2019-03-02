@@ -43,7 +43,7 @@ export const updateListItemsXmlToJson = xml => {
 
     return {
       id: itemNode && itemNode.getAttribute("ows_ID"),
-      success: errorCodeNode.textContent === "0x00000000" || !errorTextNode,
+      isSuccess: errorCodeNode.textContent === "0x00000000" || !errorTextNode,
       error:
         errorTextNode &&
         errorTextNode.textContent.replace(/[\n\r]+|[\s]{2,}/g, " ").trim()
@@ -165,7 +165,7 @@ export const groupsXmlToJson = processXml(
 export const usersXmlToJson = processXml(
   node => ({
     id: node.getAttribute("ID"),
-    name: node.getAttribute("Name"),
+    displayName: node.getAttribute("Name"),
     account: node.getAttribute("LoginName"),
     email: node.getAttribute("Email")
   }),
@@ -174,10 +174,25 @@ export const usersXmlToJson = processXml(
 
 export const uploadDocumentXmlToJson = processXml(node => {
   const errorCode = node.getAttribute("ErrorCode")
-  const success = errorCode === "Success"
+  const isSuccess = errorCode === "Success"
 
   return {
-    success,
-    error: !success ? errorCode : null
+    isSuccess,
+    error: !isSuccess ? errorCode : null
   }
 }, "CopyResult")
+
+export const checkXmlForErrors = xml => {
+  const errorNode = xml.querySelector(
+    "errorstring, errorString, errorText, errortext, errorcode, errorCode"
+  )
+
+  if (errorNode) {
+    return {
+      isSuccess: false,
+      error: errorNode.textContent.replace(/[\n\r]+|[\s]{2,}/g, " ").trim()
+    }
+  } else {
+    return { isSuccess: true, error: null }
+  }
+}
