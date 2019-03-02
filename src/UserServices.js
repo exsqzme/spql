@@ -8,7 +8,12 @@ import {
   removeUserCollectionFromGroup
 } from "./soap/web-services/usergroup"
 import { makeSoap } from "./soap/makeSoap"
-import { encodeXml, usersXmlToJson, groupsXmlToJson } from "./utils/xml"
+import {
+  encodeXml,
+  usersXmlToJson,
+  groupsXmlToJson,
+  checkXmlForErrors
+} from "./utils/xml"
 import Caml from "./caml"
 
 const buildUserXml = users => {
@@ -55,44 +60,42 @@ const UserServices = siteUrl => {
   const createGroup = ({
     name,
     description = "",
-    owner,
+    ownerLoginName,
     ownerIsGroup = false,
     defaultUserLoginName
   }) => {
     const groupInfo = {
       groupName: encodeXml(name),
       description: encodeXml(description),
-      ownerIdentifier: owner,
+      ownerIdentifier: ownerLoginName,
       ownerType: ownerIsGroup ? "group" : "user",
       defaultUserLoginName
     }
 
-    return makeSoap(siteUrl, addGroup, groupInfo)
+    return makeSoap(siteUrl, addGroup, groupInfo).then(checkXmlForErrors)
   }
 
-  const deleteGroup = groupName => makeSoap(siteUrl, removeGroup, { groupName })
+  const deleteGroup = groupName =>
+    makeSoap(siteUrl, removeGroup, { groupName }).then(checkXmlForErrors)
 
-  const addUserToGroup = (groupName, userLogin) => {
-    if (typeof userLogin === "string") {
-      userLogin = [userLogin]
+  const addUsersToGroup = (userLoginName, groupName) => {
+    if (typeof userLoginName === "string") {
+      userLoginName = [userLoginName]
     }
-    return (
-      makeSoap(siteUrl, addUserCollectionToGroup, {
-        groupName,
-        usersInfoXml: buildUserXml(userLogin)
-      })
-        .then(() => true)
-        // TODO: errors & return values
-        .catch(() => false)
-    )
+    return makeSoap(siteUrl, addUserCollectionToGroup, {
+      groupName,
+      usersInfoXml: buildUserXml(userLoginName)
+    }).then(checkXmlForErrors)
   }
 
-  const deleteUserFromGroup = (groupName, userLogin) => {
-    if (typeof userLogin === "string") userLogin = [userLogin]
+  const deleteUsersFromGroup = (userLoginName, groupName) => {
+    if (typeof userLoginName === "string") {
+      userLoginName = [userLoginName]
+    }
     return makeSoap(siteUrl, removeUserCollectionFromGroup, {
       groupName,
-      userLoginNamesXml: buildUserXml(userLogin)
-    })
+      userLoginNamesXml: buildUserXml(userLoginName)
+    }).then(checkXmlForErrors)
   }
 
   return {
@@ -102,8 +105,8 @@ const UserServices = siteUrl => {
     getUsersInGroup,
     createGroup,
     deleteGroup,
-    addUserToGroup,
-    deleteUserFromGroup
+    addUsersToGroup,
+    deleteUsersFromGroup
   }
 }
 
