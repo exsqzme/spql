@@ -6,7 +6,7 @@ SpQL is an easier way of querying SharePoint's web services. It abstracts away a
 
 Using [npm](https://www.npmjs.com/):
 
-    $ npm install --save spql
+    $ npm i spql
 
 ```js
 import spql from "spql";
@@ -22,4 +22,4 @@ You can find the library on `window.spql`.
 
 ## Getting Started
 
-Coming soon
+https://spqljs.com/
