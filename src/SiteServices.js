@@ -21,7 +21,7 @@ const SiteServices = siteUrl => {
       Fields: fields
         .map(
           f =>
-            `<FieldInformation Type="${f.type}" DisplayName: "${
+            `<FieldInformation Type="${f.type}" DisplayName="${
               f.displayName
             }" InternalName="${f.staticName}" Value="${f.value}" />`
         )
