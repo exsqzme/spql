@@ -9,7 +9,8 @@ import {
   encodeXml,
   listInfoXmlToJson,
   updateListItemsXmlToJson,
-  getListItemsXmlToJson
+  getListItemsXmlToJson,
+  getListItemsXmlTransformInPlace
 } from "./utils/xml"
 import Caml, { toCaml } from "./caml"
 
@@ -60,9 +61,15 @@ export const connectToList = siteUrl => listName => {
       ...(options.changeToken && { changeToken: options.changeToken })
     }
 
-    return makeSoap(siteUrl, getOperation, requestOptions).then(xml =>
-      options.xml ? xml : getListItemsXmlToJson(fieldMap)(xml)
-    )
+    return makeSoap(siteUrl, getOperation, requestOptions).then(xml => {
+      if (options.xml) {
+        const transformXml = select.some(s => typeof s === "object")
+        return transformXml
+          ? getListItemsXmlTransformInPlace(fieldMap)(xml)
+          : xml
+      }
+      return getListItemsXmlToJson(fieldMap)(xml)
+    })
   }
 
   const all = ({ select, orderBy, maxResults }) => {
@@ -75,6 +82,12 @@ export const connectToList = siteUrl => listName => {
     const query = toCaml(where, orderBy)
 
     return soapGet(select, query, { rowLimit: maxResults })
+  }
+
+  const xmlFind = ({ select, where, orderBy, maxResults }) => {
+    const query = toCaml(where, orderBy)
+
+    return soapGet(select, query, { rowLimit: maxResults, xml: true })
   }
 
   const findById = ({ select, id }) => {
@@ -132,6 +145,7 @@ export const connectToList = siteUrl => listName => {
     count,
     all,
     find,
+    xmlFind,
     findById,
     findOne,
     create,

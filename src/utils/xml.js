@@ -34,6 +34,14 @@ export const escapeColumnValue = s =>
 const processXml = (mapFn, selector) => xml =>
   Array.prototype.slice.call(xml.querySelectorAll(selector)).map(mapFn)
 
+const transformXml = (transformFn, selector) => xml => {
+  Array.prototype.slice
+    .call(xml.querySelectorAll(selector))
+    .forEach(transformFn)
+
+  return xml
+}
+
 export const updateListItemsXmlToJson = xml => {
   const selector = "Result"
   const mapFn = node => {
@@ -69,6 +77,26 @@ export const getListItemsXmlToJson = fieldMap => {
   }
 
   return processXml(mapFn, selector)
+}
+
+export const getListItemsXmlTransformInPlace = fieldMap => {
+  const selector = "row"
+  const transformFn = node => {
+    fieldMap.forEach(({ staticName, alias, mapFn }) => {
+      const currentAttribute = `ows_${staticName}`
+      if (alias || mapFn) {
+        const stringValue = node.getAttribute(currentAttribute)
+        const newValue = mapFn ? mapFn(stringValue) : stringValue
+        node.setAttribute(alias || currentAttribute, newValue)
+
+        if (alias) {
+          node.removeAttribute(currentAttribute)
+        }
+      }
+    })
+  }
+
+  return transformXml(transformFn, selector)
 }
 
 const processStringValueByType = (stringValue, type) => {
