@@ -76,9 +76,7 @@ const processStringValueByType = (stringValue, type) => {
     case Types.BOOLEAN:
       return stringValue === "1" || (stringValue === "0" ? false : null)
     case Types.MULTICHOICE:
-      return stringValue
-        ? stringValue.slice(2, stringValue.length - 2).split(";#")
-        : []
+      return stringValue ? stringValue.split(";#").filter(x => x) : []
     case Types.USER:
     case Types.LOOKUP:
       return stringValue
