@@ -13,10 +13,10 @@ const SiteServices = siteUrl => {
     destination,
     fields = []
   }) => {
+    const url = `${siteUrl}/${destination}/${fileName}`
     const requestOptions = {
-      DestinationUrls: [`${siteUrl}/${destination}/${fileName}`]
-        .map(url => `<string>${url}</string>`)
-        .join(""),
+      SourceUrl: url,
+      DestinationUrls: [url].map(url => `<string>${url}</string>`).join(""),
       Stream: fileStream,
       Fields: fields
         .map(
