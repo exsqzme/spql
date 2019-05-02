@@ -68,20 +68,20 @@ export const connectToList = siteUrl => listName => {
           ? getListItemsXmlTransformInPlace(fieldMap)(xml)
           : xml
       }
-      return getListItemsXmlToJson(fieldMap)(xml)
+      return getListItemsXmlToJson(fieldMap, options.calcFields)(xml)
     })
   }
 
-  const all = ({ select, orderBy, maxResults }) => {
+  const all = ({ select, orderBy, maxResults, calcFields }) => {
     const query = toCaml(Caml.IS_NOT_NULL("ID"), orderBy)
 
-    return soapGet(select, query, { rowLimit: maxResults })
+    return soapGet(select, query, { rowLimit: maxResults, calcFields })
   }
 
-  const find = ({ select, where, orderBy, maxResults }) => {
+  const find = ({ select, where, orderBy, maxResults, calcFields }) => {
     const query = toCaml(where, orderBy)
 
-    return soapGet(select, query, { rowLimit: maxResults })
+    return soapGet(select, query, { rowLimit: maxResults, calcFields })
   }
 
   const xmlFind = ({ select, where, orderBy, maxResults }) => {
@@ -90,16 +90,18 @@ export const connectToList = siteUrl => listName => {
     return soapGet(select, query, { rowLimit: maxResults, xml: true })
   }
 
-  const findById = ({ select, id }) => {
+  const findById = ({ select, id, calcFields }) => {
     const query = toCaml(
       Caml.EQ({ staticName: "ID", value: id, type: Caml.Types.COUNTER })
     )
-    return soapGet(select, query).then(([result]) => result)
+    return soapGet(select, query, { calcFields }).then(([result]) => result)
   }
 
-  const findOne = ({ select, where }) => {
+  const findOne = ({ select, where, calcFields }) => {
     const query = toCaml(where)
-    return soapGet(select, query, { rowLimit: 1 }).then(([result]) => result)
+    return soapGet(select, query, { rowLimit: 1, calcFields }).then(
+      ([result]) => result
+    )
   }
 
   const create = soapUpdate("New")

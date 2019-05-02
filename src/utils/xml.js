@@ -61,10 +61,10 @@ export const updateListItemsXmlToJson = xml => {
   return processXml(mapFn, selector)(xml)
 }
 
-export const getListItemsXmlToJson = fieldMap => {
+export const getListItemsXmlToJson = (fieldMap, calcFields = []) => {
   const selector = "row"
   const mapFn = node => {
-    return fieldMap.reduce(
+    let fields = fieldMap.reduce(
       (props, { staticName, alias, type, mapFn = val => val }) => {
         const stringValue = node.getAttribute(`ows_${staticName}`)
         props[alias || staticName] = mapFn(
@@ -74,6 +74,12 @@ export const getListItemsXmlToJson = fieldMap => {
       },
       {}
     )
+
+    calcFields.forEach(({ name, calcFn }) => {
+      fields[name] = calcFn(fields)
+    })
+
+    return fields
   }
 
   return processXml(mapFn, selector)
