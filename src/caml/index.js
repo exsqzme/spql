@@ -97,10 +97,32 @@ const TagFns = mapObj(TagBuilder, Tags)
 const eqUser = userId => field =>
   TagFns.EQ({ field, value: userId, type: Types.INTEGER })
 
+const ORS = conditions => {
+  if (conditions.length < 2) {
+    return conditions[0]
+  }
+
+  const [condition1, ...nextConditions] = conditions
+
+  return TagFns.OR(condition1, ORS(nextConditions))
+}
+
+const ANDS = conditions => {
+  if (conditions.length < 2) {
+    return conditions[0]
+  }
+
+  const [condition1, ...nextConditions] = conditions
+
+  return TagFns.AND(condition1, ANDS(nextConditions))
+}
+
 const Caml = {
   Types,
   Values,
   ...TagFns,
+  ANDS,
+  ORS,
   EQ_USER: (field, userId) => eqUser(userId)(field),
   EQ_CURRENT_USER: field => eqUser(Values.CURRENT_USER)(field)
 }
