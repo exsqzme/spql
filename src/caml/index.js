@@ -95,7 +95,7 @@ const mapObj = (fn, obj) => {
 const TagFns = mapObj(TagBuilder, Tags)
 
 const eqUser = userId => field =>
-  TagFns.EQ({ field, value: userId, type: Types.INTEGER })
+  TagFns.EQ({ staticName: field, value: userId, type: Types.INTEGER })
 
 const ORS = conditions => {
   if (conditions.length < 2) {
