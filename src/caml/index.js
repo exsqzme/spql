@@ -37,8 +37,8 @@ const TagBuilder = tag => {
     case Tags.CONTAINS:
       return ({ staticName, value, type, byId = false }) => {
         let fieldProps = { Name: staticName }
-        if (type === "Lookup") {
-          fieldProps["LookupId"] = byId ? "TRUE" : "FALSE"
+        if (byId) {
+          fieldProps["LookupId"] = "TRUE"
         }
         let camlField = toFieldRef(fieldProps)
 
@@ -95,7 +95,12 @@ const mapObj = (fn, obj) => {
 const TagFns = mapObj(TagBuilder, Tags)
 
 const eqUser = userId => field =>
-  TagFns.EQ({ staticName: field, value: userId, type: Types.INTEGER })
+  TagFns.EQ({
+    staticName: field,
+    value: userId,
+    type: Types.INTEGER,
+    byId: true
+  })
 
 const ORS = conditions => {
   if (conditions.length < 2) {
