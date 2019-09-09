@@ -14,11 +14,15 @@ import {
 } from "./utils/xml"
 import Caml, { toCaml } from "./caml"
 
-const DEFAULT_QUERY_OPTIONS = `<QueryOptions>
-    <ViewAttributes Scope="RecursiveAll" />
+const generateQueryOptions = options => {
+  const DEFAULT_QUERY_OPTIONS = `<ViewAttributes Scope="RecursiveAll" />
     <IncludeMandatoryColumns>FALSE</IncludeMandatoryColumns>
-    <ViewFieldsOnly>TRUE</ViewFieldsOnly>
-</QueryOptions>`
+    <ViewFieldsOnly>TRUE</ViewFieldsOnly>`
+
+  return `<QueryOptions>
+      ${options || DEFAULT_QUERY_OPTIONS}
+    </QueryOptions>`
+}
 
 export const connectToList = siteUrl => listName => {
   listName = encodeXml(listName)
@@ -56,7 +60,7 @@ export const connectToList = siteUrl => listName => {
       listName,
       viewFields: transformSelectedFieldsToViewFields(fieldMap),
       query,
-      queryOptions: options.queryOptions || DEFAULT_QUERY_OPTIONS,
+      queryOptions: generateQueryOptions(options.queryOptions),
       rowLimit: options.rowLimit || 0,
       ...(options.changeToken && { changeToken: options.changeToken })
     }
@@ -72,36 +76,59 @@ export const connectToList = siteUrl => listName => {
     })
   }
 
-  const all = ({ select, orderBy, maxResults, calcFields }) => {
+  const all = ({ select, orderBy, maxResults, calcFields, queryOptions }) => {
     const query = toCaml(Caml.IS_NOT_NULL("ID"), orderBy)
 
-    return soapGet(select, query, { rowLimit: maxResults, calcFields })
+    return soapGet(select, query, {
+      rowLimit: maxResults,
+      calcFields,
+      queryOptions
+    })
   }
 
-  const find = ({ select, where, orderBy, maxResults, calcFields }) => {
+  const find = ({
+    select,
+    where,
+    orderBy,
+    maxResults,
+    calcFields,
+    queryOptions
+  }) => {
     const query = toCaml(where, orderBy)
 
-    return soapGet(select, query, { rowLimit: maxResults, calcFields })
+    return soapGet(select, query, {
+      rowLimit: maxResults,
+      calcFields,
+      queryOptions
+    })
   }
 
-  const xmlFind = ({ select, where, orderBy, maxResults }) => {
+  const xmlFind = ({ select, where, orderBy, maxResults, queryOptions }) => {
     const query = toCaml(where, orderBy)
 
-    return soapGet(select, query, { rowLimit: maxResults, xml: true })
+    return soapGet(select, query, {
+      rowLimit: maxResults,
+      xml: true,
+      queryOptions
+    })
   }
 
-  const findById = ({ select, id, calcFields }) => {
+  const findById = ({ select, id, calcFields, queryOptions }) => {
     const query = toCaml(
       Caml.EQ({ staticName: "ID", value: id, type: Caml.Types.COUNTER })
     )
-    return soapGet(select, query, { calcFields }).then(([result]) => result)
-  }
-
-  const findOne = ({ select, where, calcFields }) => {
-    const query = toCaml(where)
-    return soapGet(select, query, { rowLimit: 1, calcFields }).then(
+    return soapGet(select, query, { calcFields, queryOptions }).then(
       ([result]) => result
     )
+  }
+
+  const findOne = ({ select, where, calcFields, queryOptions }) => {
+    const query = toCaml(where)
+    return soapGet(select, query, {
+      rowLimit: 1,
+      calcFields,
+      queryOptions
+    }).then(([result]) => result)
   }
 
   const create = soapUpdate("New")
